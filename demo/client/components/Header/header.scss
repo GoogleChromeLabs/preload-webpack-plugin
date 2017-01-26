@@ -1,0 +1,33 @@
+@import "client/variables";
+
+.header-container {
+  background-color: $grey;
+  padding: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+
+  .header-title {
+    color: $white;
+    margin: 0;
+    font-size: 1.4em;
+  }
+
+  &.header-white {
+    background-color: $white;
+    .header-title {
+      color: $dark;
+    }
+  }
+  &.header-red {
+    background-color: $red;
+  }
+  &.header-dark {
+    background-color: $dark;
+  }
+  &.header-grey {
+    background-color: $grey;
+  }
+  &.header-blue {
+    background-color: $blue;
+  }
+}

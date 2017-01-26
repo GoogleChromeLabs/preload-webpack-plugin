@@ -1,0 +1,28 @@
+@import "client/variables";
+
+.navbar {
+  background-color: $light;
+  user-select: none;
+  -webkit-user-select: none;
+  position: fixed;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  height: 2em;
+  line-height: 2em;
+  width: 100%;
+  z-index: 1000;
+  padding: 0 1.5em;
+  font-size: 1.2em;
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    &:after {
+      content: '\a0\b7\a0';
+    }
+    &:last-child:after {
+      content: '';
+    }
+  }
+}
