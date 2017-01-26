@@ -3,6 +3,10 @@
   "version": "0.0.8",
   "description": "Enhances html-webpack-plugin with link rel=preload wiring capabilities for scripts",
   "main": "index.js",
+  "scripts": {
+    "lint": "eslint --quiet -f codeframe index.js",
+    "lint-fix": "eslint --fix --quiet -f codeframe index.js"
+  },
   "files": [
     "index.js"
   ],
@@ -25,6 +29,9 @@
   },
   "homepage": "https://github.com/googlechrome/preload-webpack-plugin",
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "eslint": "^3.14.1",
+    "eslint-config-google": "^0.7.1",
     "html-webpack-plugin": "^2.26.0"
   },
   "peerDependencies": {

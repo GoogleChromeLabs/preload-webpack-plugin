@@ -14,49 +14,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+'use strict';
+
 class PreloadPlugin {
   constructor(options) {
     this.options = options;
   }
 
   apply(compiler) {
-      const chunkRegEx = /^chunk[.]/;
-      let self = this;
-      let filesToInclude = '';
-      let extractedChunks = [];
-      compiler.plugin('compilation', compilation => {
-        compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
-          if (self.options.rel === undefined) {
-              self.options.rel = 'preload';
-          }
+    const self = this;
+    let filesToInclude = '';
+    let extractedChunks = [];
+    compiler.plugin('compilation', compilation => {
+      compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+        if (self.options.rel === undefined) {
+          self.options.rel = 'preload';
+        }
 
-          if (self.options.as === undefined) {
-              self.options.as = 'script';
-          }
+        if (self.options.as === undefined) {
+          self.options.as = 'script';
+        }
 
-          if (self.options.include === undefined || self.options.include === 'asyncChunks') {
-              let asyncChunksSource = compilation
+        if (self.options.include === undefined || self.options.include === 'asyncChunks') {
+          const asyncChunksSource = compilation
               .chunks.filter(chunk => !chunk.isInitial())
               .map(chunk => chunk.files);
-              extractedChunks = [].concat(...asyncChunksSource);
-          } else if (self.options.include === 'all') {
+          extractedChunks = [].concat(...asyncChunksSource);
+        } else if (self.options.include === 'all') {
               // Async chunks, vendor chunks, normal chunks.
-              extractedChunks = compilation
+          extractedChunks = compilation
                 .chunks
                 .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+        }
+        extractedChunks.forEach(entry => {
+          if (self.options.rel === 'preload') {
+            filesToInclude+= `<link rel="${self.options.rel}" src="/${entry}" as="${self.options.as}">\n`;
+          } else {
+            filesToInclude+= `<link rel="${self.options.rel}" src="/${entry}">\n`;
           }
-          extractedChunks.forEach(entry => {
-            if (self.options.rel === 'preload') {
-              filesToInclude+= `<link rel="${self.options.rel}" src="/${entry}" as="${self.options.as}">\n`;
-            } else {
-              filesToInclude+= `<link rel="${self.options.rel}" src="/${entry}">\n`;
-            }
-          })
-          filesToInclude+= '</head>';
-          htmlPluginData.html = htmlPluginData.html.replace('</head>', filesToInclude);
-          cb(null, htmlPluginData);
         });
+        filesToInclude+= '</head>';
+        htmlPluginData.html = htmlPluginData.html.replace('</head>', filesToInclude);
+        cb(null, htmlPluginData);
       });
+    });
   }
 }
 
