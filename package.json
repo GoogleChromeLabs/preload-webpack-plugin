@@ -1,0 +1,33 @@
+{
+  "name": "preload-webpack-plugin",
+  "version": "0.0.8",
+  "description": "Enhances html-webpack-plugin with link rel=preload wiring capabilities for scripts",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/googlechrome/preload-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "html-webpack-plugin",
+    "script",
+    "preload",
+    "resource hints"
+  ],
+  "author": "Addy Osmani <addy.osmani@gmail.com> (https://github.com/addyosmani)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/googlechrome/preload-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/googlechrome/preload-webpack-plugin",
+  "devDependencies": {
+    "html-webpack-plugin": "^2.26.0"
+  },
+  "peerDependencies": {
+    "webpack": "1 || ^2.2.0"
+  }
+}
