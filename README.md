@@ -30,7 +30,8 @@ using `<link rel='preload'>`.
 
 Pre-requisites
 --------------
-This module requires Node 4.0.0 and onwards in order to function.
+This module requires Node 4.0.0 and onwards in order to function. It also requires that you're using 
+[html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) in your Webpack project. 
 
 Installation
 ---------------
@@ -84,8 +85,8 @@ For a project generating two async scripts with dynamically generated names, suc
 will be injected into the document `<head>`:
 
 ```html
-<link rel="preload" href="/chunk.31132ae6680e598f8879.js" as="script">
-<link rel="preload" href="/chunk.d15e7fdfc91b34bb78c4.js" as="script">
+<link rel="preload" href="chunk.31132ae6680e598f8879.js" as="script">
+<link rel="preload" href="chunk.d15e7fdfc91b34bb78c4.js" as="script">
 ```
 
 You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using
@@ -105,7 +106,7 @@ plugins: [
 Resource Hints
 ---------------------
 
-Should you wish to use Resource Hints instead of `preload`, this plugin also supports wiring those up.
+Should you wish to use Resource Hints (such as `prefetch`) instead of `preload`, this plugin also supports wiring those up.
 
 Prefetch:
 
@@ -118,10 +119,17 @@ plugins: [
 ]
 ```
 
+For the async chunks mentioned earlier, the plugin would update your HTML to the following:
+
+```html
+<link rel="prefetch" href="chunk.31132ae6680e598f8879.js">
+<link rel="prefetch" href="chunk.d15e7fdfc91b34bb78c4.js">
+```
+
 Demo
 ----------------------
 
-A demo application implementing the PRPL pattern with React that uses this plugin can be found in the `demo`
+A demo application implementing the [PRPL pattern](https://developers.google.com/web/fundamentals/performance/prpl-pattern/) with React that uses this plugin can be found in the `demo`
 directory.
 
 Support
