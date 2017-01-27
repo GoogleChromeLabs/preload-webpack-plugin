@@ -172,6 +172,12 @@ Additional Notes
 * If optimising for future sessions, use `prefetch` and `preconnect`. Prefetched resources are maintained
 in the HTTP Cache for at least 5 minutes (in Chrome) regardless of the resource's cachability.
 
+Related plugins
+--------------------------
+
+* [script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin) - Enhances html-webpack-plugin with options including 'async', 'defer', 'module' and preload (no async chunk support yet)
+* [resource-hints-webpack-plugin](https://github.com/jantimon/resource-hints-webpack-plugin) - Automatically wires resource hints for your resources (similarly no async chunk support)
+
 License
 -------
 
