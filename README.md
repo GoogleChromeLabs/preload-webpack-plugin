@@ -130,6 +130,28 @@ If you've found an error in this sample, please file an issue:
 Patches are encouraged, and may be submitted by forking this project and
 submitting a pull request through GitHub.
 
+Contributing workflow
+---------------------
+
+`index.js` contains the primary source for the plugin, `test` contains tests and `demo` contains demo code. 
+
+Test the plugin:
+
+```sh
+$ npm install
+$ npm run test
+```
+
+Lint the plugin:
+
+```sh
+$ npm run lint
+$ npm run lint-fix # fix linting issues
+```
+
+The project is written in ES2015, but does not use a build-step. This may change depending on
+any Node version support requests posted to the issue tracker. 
+
 License
 -------
 
