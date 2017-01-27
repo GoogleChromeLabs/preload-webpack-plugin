@@ -1,5 +1,8 @@
 preload-webpack-plugin
 ============
+[![NPM version][npm-img]][npm-url]
+[![NPM downloads][npm-downloads-img]][npm-url]
+[![Dependency Status][daviddm-img]][daviddm-url]
 
 A Webpack plugin for automatically wiring up asynchronous (and other types) of JavaScript
 chunks using `<link rel='preload'>`. This helps with lazy-loading.
@@ -197,3 +200,9 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
+
+[npm-url]: https://npmjs.org/package/preload-webpack-plugin
+[npm-img]: https://badge.fury.io/js/preload-webpack-plugin.svg
+[npm-downloads-img]: https://img.shields.io/npm/dm/preload-webpack-plugin.svg?style=flat-square
+[daviddm-img]: https://david-dm.org/googlechrome/preload-webpack-plugin.svg
+[daviddm-url]: https://david-dm.org/googlechrome/preload-webpack-plugin
