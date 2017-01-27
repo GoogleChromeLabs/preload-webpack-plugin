@@ -34,8 +34,8 @@ class PreloadPlugin {
     let extractedChunks = [];
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
-        // 'asyncChunks' are chunks intended for lazy/async loading usually generated as 
-        // part of code-splitting with import() or require.ensure(). By default, asyncChunks 
+        // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
+        // part of code-splitting with import() or require.ensure(). By default, asyncChunks
         // get wired up using link rel=preload when using this plugin. This behaviour can be
         // configured to preload all types of chunks or just prefetch chunks as needed.
         if (options.include === undefined || options.include === 'asyncChunks') {
@@ -51,18 +51,18 @@ class PreloadPlugin {
           extractedChunks = [].concat(...asyncChunksSource);
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
-            extractedChunks = compilation
+          extractedChunks = compilation
               .chunks
               .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
         }
         extractedChunks.forEach(entry => {
           if (options.rel === 'preload') {
-            filesToInclude+= `<link rel="${options.rel}" src="/${entry}" as="${options.as}">\n`;
+            filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
           } else {
             // If preload isn't specified, the only other valid entry is prefetch here
             // You could specify preconnect but as we're dealing with direct paths to resources
             // instead of origins that would make less sense.
-            filesToInclude+= `<link rel="${options.rel}" src="/${entry}">\n`;
+            filesToInclude+= `<link rel="${options.rel}" href="${entry}">\n`;
           }
         });
         if (htmlPluginData.html.indexOf('</head>') !== -1) {

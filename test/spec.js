@@ -44,7 +44,7 @@ describe('PreloadPlugin preloads or prefetches async chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="preload" src="/chunk.');
+      expect(html).toContain('<link rel="preload" src="chunk.');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
@@ -71,7 +71,7 @@ describe('PreloadPlugin preloads or prefetches async chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="prefetch" src="/chunk.');
+      expect(html).toContain('<link rel="prefetch" href="chunk.');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
@@ -97,7 +97,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="preload" src="/1.bundle.js" as="script">');
+      expect(html).toContain('<link rel="preload" href="1.bundle.js" as="script">');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
@@ -122,7 +122,7 @@ describe('PreloadPlugin prefetches normal chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="prefetch" src="/1.bundle.js"');
+      expect(html).toContain('<link rel="prefetch" href="1.bundle.js"');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();

@@ -1,6 +1,0 @@
-{
-  "assetsByChunkName": {
-    "js": "bundle.js",
-    "vendor": "vendor.bundle.js"
-  }
-}
