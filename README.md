@@ -15,15 +15,18 @@ Introduction
 
 [Preload](https://w3c.github.io/preload/) is a web standard aimed at improving performance 
 and granular loading of resources. It is a declarative fetch that can tell a browser to start fetching a
-source because a developer knows the resource will be needed soon. 
+source because a developer knows the resource will be needed soon. [Preload: What is it good for?](https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/)
+is a recommended read if you haven't used the feature before.
 
 In simple web apps, it's straight-forward to specify static paths to scripts you
 would like to preload - especially if their names or locations are unlikely to change. In more complex apps, 
-JavaScript bundles can be split into "chunks" (that represent routes or components) at build time with dynamic 
+JavaScript can be split into "chunks" (that represent routes or components) at with dynamic 
 names. These names can include hashes, numbers and other properties that can change with each build.
 
-To make it easier to wire up async chunks for lazy-loading, this plugin offers a
-drop-in way to wire them up using `<link rel='preload'>`.
+For example, `chunk.31132ae6680e598f8879.js`.
+
+To make it easier to wire up async chunks for lazy-loading, this plugin offers a drop-in way to wire them up 
+using `<link rel='preload'>`.
 
 Pre-requisites
 --------------
@@ -81,8 +84,8 @@ For a project generating two async scripts with dynamically generated names, suc
 will be injected into the document `<head>`:
 
 ```html
-<link rel="preload" src="/chunk.31132ae6680e598f8879.js" as="script">
-<link rel="preload" src="/chunk.d15e7fdfc91b34bb78c4.js" as="script">
+<link rel="preload" href="/chunk.31132ae6680e598f8879.js" as="script">
+<link rel="preload" href="/chunk.d15e7fdfc91b34bb78c4.js" as="script">
 ```
 
 You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using
