@@ -155,6 +155,15 @@ $ npm run lint-fix # fix linting issues
 The project is written in ES2015, but does not use a build-step. This may change depending on
 any Node version support requests posted to the issue tracker. 
 
+Additional Notes
+---------------------------
+
+* Be careful not to `preload` resources a user is unlikely to need. This can waste their bandwidth. 
+* Use `preload` for the current session if you think a user is likely to visit the next page. There is no
+100% guarantee preloaded items will end up in the HTTP Cache and read locally beyond this session.
+* If optimising for future sessions, use `prefetch` and `preconnect`. Prefetched resources are maintained
+in the HTTP Cache for at least 5 minutes (in Chrome) regardless of the resource's cachability.
+
 License
 -------
 
