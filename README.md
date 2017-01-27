@@ -30,7 +30,7 @@ using `<link rel='preload'>`.
 
 Pre-requisites
 --------------
-This module requires Node 4.0.0 and onwards in order to function. It also requires that you're using 
+This module requires Webpack 2.2.0 and above. It also requires that you're using 
 [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) in your Webpack project. 
 
 Installation

@@ -44,7 +44,8 @@ describe('PreloadPlugin preloads or prefetches async chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="preload" src="chunk.');
+      expect(html).toContain('<link rel="preload" href="chunk.');
+      expect(html).not.toContain('<link rel="preload" href="bundle.');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
@@ -83,7 +84,10 @@ describe('PreloadPlugin preloads normal chunks', function() {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),
       output: {
-        path: OUTPUT_DIR
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
       },
       plugins: [
         new HtmlWebpackPlugin(),
@@ -97,7 +101,8 @@ describe('PreloadPlugin preloads normal chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="preload" href="1.bundle.js" as="script">');
+      expect(html).toContain('<link rel="preload" href="chunk');
+      expect(html).toContain('<link rel="preload" href="bundle.js"');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
@@ -122,7 +127,8 @@ describe('PreloadPlugin prefetches normal chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      expect(html).toContain('<link rel="prefetch" href="1.bundle.js"');
+      expect(html).toContain('<link rel="prefetch" href="0');
+      expect(html).toContain('<link rel="prefetch" href="main.js"');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
