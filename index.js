@@ -16,45 +16,62 @@
  */
 'use strict';
 
+const objectAssign = require('object-assign');
+const defaultOptions = {
+  rel: 'preload',
+  as: 'script',
+  include: 'asyncChunks'
+};
+
 class PreloadPlugin {
   constructor(options) {
-    this.options = options;
+    this.options = objectAssign({}, defaultOptions, options);
   }
 
   apply(compiler) {
-    const self = this;
+    const options = this.options;
     let filesToInclude = '';
     let extractedChunks = [];
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
-        if (self.options.rel === undefined) {
-          self.options.rel = 'preload';
-        }
-
-        if (self.options.as === undefined) {
-          self.options.as = 'script';
-        }
-
-        if (self.options.include === undefined || self.options.include === 'asyncChunks') {
-          const asyncChunksSource = compilation
+        // 'asyncChunks' are chunks intended for lazy/async loading usually generated as 
+        // part of code-splitting with import() or require.ensure(). By default, asyncChunks 
+        // get wired up using link rel=preload when using this plugin. This behaviour can be
+        // configured to preload all types of chunks or just prefetch chunks as needed.
+        if (options.include === undefined || options.include === 'asyncChunks') {
+          let asyncChunksSource = null;
+          try {
+            asyncChunksSource = compilation
               .chunks.filter(chunk => !chunk.isInitial())
               .map(chunk => chunk.files);
+          } catch (e) {
+            asyncChunksSource = compilation.chunks
+              .map(chunk => chunk.files);
+          }
           extractedChunks = [].concat(...asyncChunksSource);
-        } else if (self.options.include === 'all') {
-              // Async chunks, vendor chunks, normal chunks.
-          extractedChunks = compilation
-                .chunks
-                .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+        } else if (options.include === 'all') {
+            // Async chunks, vendor chunks, normal chunks.
+            extractedChunks = compilation
+              .chunks
+              .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
         }
         extractedChunks.forEach(entry => {
-          if (self.options.rel === 'preload') {
-            filesToInclude+= `<link rel="${self.options.rel}" src="/${entry}" as="${self.options.as}">\n`;
+          if (options.rel === 'preload') {
+            filesToInclude+= `<link rel="${options.rel}" src="/${entry}" as="${options.as}">\n`;
           } else {
-            filesToInclude+= `<link rel="${self.options.rel}" src="/${entry}">\n`;
+            // If preload isn't specified, the only other valid entry is prefetch here
+            // You could specify preconnect but as we're dealing with direct paths to resources
+            // instead of origins that would make less sense.
+            filesToInclude+= `<link rel="${options.rel}" src="/${entry}">\n`;
           }
         });
-        filesToInclude+= '</head>';
-        htmlPluginData.html = htmlPluginData.html.replace('</head>', filesToInclude);
+        if (htmlPluginData.html.indexOf('</head>') !== -1) {
+          // If a valid closing </head> is found, update it to include preload/prefetch tags
+          htmlPluginData.html = htmlPluginData.html.replace('</head>', filesToInclude + '</head>');
+        } else {
+          // Otherwise assume at least a <body> is present and update it to include a new <head>
+          htmlPluginData.html = htmlPluginData.html.replace('<body>', '<head>' + filesToInclude + '</head><body>');
+        }
         cb(null, htmlPluginData);
       });
     });
