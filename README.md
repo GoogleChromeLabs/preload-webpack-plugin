@@ -50,7 +50,7 @@ $ npm install --save-dev preload-webpack-plugin
 Alternatively, using yarn:
 
 ```js
-yarn add --d preload-webpack-plugin
+yarn add -D preload-webpack-plugin
 ```
 
 Usage
