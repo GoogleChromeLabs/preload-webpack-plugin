@@ -1,6 +1,6 @@
 {
   "name": "preload-webpack-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Enhances html-webpack-plugin with link rel=preload wiring capabilities for scripts",
   "main": "index.js",
   "scripts": {
