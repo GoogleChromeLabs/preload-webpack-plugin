@@ -54,6 +54,19 @@ class PreloadPlugin {
           extractedChunks = compilation
               .chunks
               .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+        } else if (Array.isArray(options.include)) {
+          // Keep only user specified chunks
+          extractedChunks = compilation
+              .chunks
+              .filter((chunk) => {
+                const chunkName = chunk.name;
+                // Works only for named chunks
+                if (!chunkName) {
+                  return false;
+                }
+                return options.include.indexOf(chunkName) > -1;
+              })
+              .map(chunk => chunk.files);
         }
         extractedChunks.forEach(entry => {
           if (options.rel === 'preload') {

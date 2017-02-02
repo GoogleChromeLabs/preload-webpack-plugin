@@ -108,6 +108,24 @@ plugins: [
 ]
 ```
 
+In case you work with named chunks, you can explicitly specify which ones to `include` by passing an array:
+```js
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    as: 'script',
+    include: ['home']
+  })
+]
+```
+
+wiil inject just this:
+
+```html
+<link rel="preload" href="home.31132ae6680e598f8879.js" as="script">
+```
+
 Resource Hints
 ---------------------
 

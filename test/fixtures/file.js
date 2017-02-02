@@ -18,4 +18,4 @@ console.log('lol');
 require.ensure(["./home.js"], function() {
 //   var a = require("module-a");
 //   console.log(a);
-});
+}, 'home');

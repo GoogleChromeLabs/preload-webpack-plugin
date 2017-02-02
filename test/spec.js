@@ -134,3 +134,33 @@ describe('PreloadPlugin prefetches normal chunks', function() {
     compiler.outputFileSystem = new MemoryFileSystem();
   });
 });
+
+describe('PreloadPlugin filters chunks', function() {
+  it('based on chunkname', function(done) {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: '[name].[chunkhash].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as: 'script',
+          include: ['home']
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" href="home');
+      expect(html).not.toContain('<link rel="preload" href="bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
