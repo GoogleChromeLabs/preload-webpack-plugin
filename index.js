@@ -42,18 +42,14 @@ class PreloadPlugin {
           let asyncChunksSource = null;
           try {
             asyncChunksSource = compilation
-              .chunks.filter(chunk => !chunk.isInitial())
-              .map(chunk => chunk.files);
+              .chunks.filter(chunk => !chunk.isInitial());
           } catch (e) {
-            asyncChunksSource = compilation.chunks
-              .map(chunk => chunk.files);
+            asyncChunksSource = compilation.chunks;
           }
           extractedChunks = [].concat(...asyncChunksSource);
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
-          extractedChunks = compilation
-              .chunks
-              .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+          extractedChunks = compilation.chunks
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
           extractedChunks = compilation
@@ -65,10 +61,9 @@ class PreloadPlugin {
                   return false;
                 }
                 return options.include.indexOf(chunkName) > -1;
-              })
-              .map(chunk => chunk.files);
+              });
         }
-        extractedChunks.forEach(entry => {
+        extractedChunks.map(chunk => chunk.files).forEach(entry => {
           if (options.rel === 'preload') {
             filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
           } else {
