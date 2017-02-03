@@ -136,7 +136,7 @@ describe('PreloadPlugin prefetches normal chunks', function() {
 });
 
 describe('PreloadPlugin filters chunks', function() {
-  it('based on chunkname', function(done) {
+  it('including based on chunkname', function(done) {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),
       output: {
@@ -158,6 +158,32 @@ describe('PreloadPlugin filters chunks', function() {
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
       expect(html).toContain('<link rel="preload" href="home');
+      expect(html).not.toContain('<link rel="preload" href="bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+
+  it('excluding based on chunkname', function(done) {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: '[name].[chunkhash].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          exclude: ['home']
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).not.toContain('<link rel="preload" href="home');
       expect(html).not.toContain('<link rel="preload" href="bundle.js"');
       done();
     });

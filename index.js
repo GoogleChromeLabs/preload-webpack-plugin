@@ -54,14 +54,11 @@ class PreloadPlugin {
           // Keep only user specified chunks
           extractedChunks = compilation
               .chunks
-              .filter((chunk) => {
-                const chunkName = chunk.name;
-                // Works only for named chunks
-                if (!chunkName) {
-                  return false;
-                }
-                return options.include.indexOf(chunkName) > -1;
-              });
+              .filter((chunk) => this.containsChunkName(chunk, options.include));
+        }
+        // Exclude user specified chunks
+        if (Array.isArray(options.exclude)) {
+          extractedChunks = extractedChunks.filter((chunk) => !this.containsChunkName(chunk, options.exclude));
         }
         extractedChunks.map(chunk => chunk.files).forEach(entry => {
           if (options.rel === 'preload') {
@@ -83,6 +80,15 @@ class PreloadPlugin {
         cb(null, htmlPluginData);
       });
     });
+  }
+
+  containsChunkName(chunk, chunkNames) {
+    const chunkName = chunk.name;
+    // Works only for named chunks
+    if (!chunkName) {
+      return false;
+    }
+    return chunkNames.indexOf(chunkName) > -1;
   }
 }
 
