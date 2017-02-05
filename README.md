@@ -43,13 +43,13 @@ Installation
 
 First, install the package as a dependency in your package.json:
 
-```js
+```sh
 $ npm install --save-dev preload-webpack-plugin
 ```
 
 Alternatively, using yarn:
 
-```js
+```sh
 yarn add -D preload-webpack-plugin
 ```
 
