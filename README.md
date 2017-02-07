@@ -120,7 +120,7 @@ plugins: [
 ]
 ```
 
-wiil inject just this:
+will inject just this:
 
 ```html
 <link rel="preload" href="home.31132ae6680e598f8879.js" as="script">
