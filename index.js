@@ -42,33 +42,25 @@ class PreloadPlugin {
           let asyncChunksSource = null;
           try {
             asyncChunksSource = compilation
-              .chunks.filter(chunk => !chunk.isInitial())
-              .map(chunk => chunk.files);
+              .chunks.filter(chunk => !chunk.isInitial());
           } catch (e) {
-            asyncChunksSource = compilation.chunks
-              .map(chunk => chunk.files);
+            asyncChunksSource = compilation.chunks;
           }
           extractedChunks = [].concat(...asyncChunksSource);
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
-          extractedChunks = compilation
-              .chunks
-              .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+          extractedChunks = compilation.chunks
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
           extractedChunks = compilation
               .chunks
-              .filter((chunk) => {
-                const chunkName = chunk.name;
-                // Works only for named chunks
-                if (!chunkName) {
-                  return false;
-                }
-                return options.include.indexOf(chunkName) > -1;
-              })
-              .map(chunk => chunk.files);
+              .filter((chunk) => this.containsChunkName(chunk, options.include));
         }
-        extractedChunks.forEach(entry => {
+        // Exclude user specified chunks
+        if (Array.isArray(options.exclude)) {
+          extractedChunks = extractedChunks.filter((chunk) => !this.containsChunkName(chunk, options.exclude));
+        }
+        extractedChunks.map(chunk => chunk.files).forEach(entry => {
           if (options.rel === 'preload') {
             filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
           } else {
@@ -88,6 +80,15 @@ class PreloadPlugin {
         cb(null, htmlPluginData);
       });
     });
+  }
+
+  containsChunkName(chunk, chunkNames) {
+    const chunkName = chunk.name;
+    // Works only for named chunks
+    if (!chunkName) {
+      return false;
+    }
+    return chunkNames.indexOf(chunkName) > -1;
   }
 }
 

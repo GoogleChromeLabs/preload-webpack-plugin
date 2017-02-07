@@ -126,6 +126,17 @@ will inject just this:
 <link rel="preload" href="home.31132ae6680e598f8879.js" as="script">
 ```
 
+Additionally, you can explicitly specify which named chunks to `exclude`:
+
+```js
+plugins: [
+  new PreloadWebpackPlugin({
+    include: 'asyncChunks',
+    exclude: ['home']
+  })
+]
+```
+
 Resource Hints
 ---------------------
 
