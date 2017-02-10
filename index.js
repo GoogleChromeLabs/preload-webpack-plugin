@@ -68,7 +68,10 @@ class PreloadPlugin {
               })
               .map(chunk => chunk.files);
         }
+
+        const publicPath = compilation.outputOptions.publicPath || '';
         extractedChunks.forEach(entry => {
+          entry = `${publicPath}${entry}`;
           if (options.rel === 'preload') {
             filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
           } else {
