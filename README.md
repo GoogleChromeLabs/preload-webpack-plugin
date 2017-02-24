@@ -126,6 +126,25 @@ will inject just this:
 <link rel="preload" href="home.31132ae6680e598f8879.js" as="script">
 ```
 
+Filtering chunks
+---------------------
+
+There may be chunks that you don't want to have preloaded (sourcemaps, for example). Before preloading each chunk, this plugin checks that the file does not match any regex in the `fileBlacklist` option. The default value of this blacklist is `[/\.map/]`, meaning no sourcemaps will be preloaded. You can easily override this:
+
+```js
+new PreloadWebpackPlugin({
+  fileBlacklist: [/\.whatever/]
+})
+```
+
+Passing your own array will override the default, so if you want to continue filtering sourcemaps along with your own custom settings, you'll need to include the regex for sourcemaps:
+
+```js
+new PreloadWebpackPlugin({
+  fileBlacklist: [/\.map./, /\.whatever/]
+})
+```
+
 Resource Hints
 ---------------------
 

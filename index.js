@@ -20,7 +20,8 @@ const objectAssign = require('object-assign');
 const defaultOptions = {
   rel: 'preload',
   as: 'script',
-  include: 'asyncChunks'
+  include: 'asyncChunks',
+  fileBlacklist: [/\.map/]
 };
 
 class PreloadPlugin {
@@ -70,7 +71,10 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
-        extractedChunks.forEach(entry => {
+
+        extractedChunks.filter(entry => {
+          return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
+        }).forEach(entry => {
           entry = `${publicPath}${entry}`;
           if (options.rel === 'preload') {
             filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
