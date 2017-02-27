@@ -67,7 +67,8 @@ class PreloadPlugin {
                 }
                 return options.include.indexOf(chunkName) > -1;
               })
-              .map(chunk => chunk.files);
+              .map(chunk => chunk.files)
+              .reduce((prev, curr) => prev.concat(curr), []);
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
