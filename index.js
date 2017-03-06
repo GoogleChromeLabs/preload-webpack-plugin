@@ -49,7 +49,7 @@ class PreloadPlugin {
             asyncChunksSource = compilation.chunks
               .map(chunk => chunk.files);
           }
-          extractedChunks = [].concat(...asyncChunksSource);
+          extractedChunks = [].concat.apply([], asyncChunksSource);
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
           extractedChunks = compilation
