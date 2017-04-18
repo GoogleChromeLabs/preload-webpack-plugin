@@ -141,7 +141,7 @@ Passing your own array will override the default, so if you want to continue fil
 
 ```js
 new PreloadWebpackPlugin({
-  fileBlacklist: [/\.map./, /\.whatever/]
+  fileBlacklist: [/\.map/, /\.whatever/]
 })
 ```
 
