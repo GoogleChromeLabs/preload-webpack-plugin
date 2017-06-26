@@ -19,7 +19,6 @@
 const objectAssign = require('object-assign');
 const defaultOptions = {
   rel: 'preload',
-  as: 'script',
   include: 'asyncChunks',
   fileBlacklist: [/\.map/]
 };
@@ -78,7 +77,15 @@ class PreloadPlugin {
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
           if (options.rel === 'preload') {
-            filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
+            // If `as` value is not provided in option, dynamically determine the correct
+            // value depends on suffix of filename. Otherwise use the given `as` value.
+            let asValue;
+            if (!options.as) {
+              asValue = entry.match(/\.css$/) ? 'style' : 'script';
+            } else {
+              asValue = options.as;
+            }
+            filesToInclude+= `<link rel="${options.rel}" as="${asValue}" href="${entry}">\n`;
           } else {
             // If preload isn't specified, the only other valid entry is prefetch here
             // You could specify preconnect but as we're dealing with direct paths to resources
