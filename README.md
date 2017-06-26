@@ -9,34 +9,34 @@ preload-webpack-plugin
 A Webpack plugin for automatically wiring up asynchronous (and other types) of JavaScript
 chunks using `<link rel='preload'>`. This helps with lazy-loading.
 
-Note: This is an extension plugin for [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that 
+Note: This is an extension plugin for [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that
 simplifies the creation of HTML files to serve your webpack bundles.
 
-This plugin is a stop-gap until we add support for asynchronous chunk wiring to 
+This plugin is a stop-gap until we add support for asynchronous chunk wiring to
 [script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin/pull/9).
 
 Introduction
 ------------
 
-[Preload](https://w3c.github.io/preload/) is a web standard aimed at improving performance 
+[Preload](https://w3c.github.io/preload/) is a web standard aimed at improving performance
 and granular loading of resources. It is a declarative fetch that can tell a browser to start fetching a
 source because a developer knows the resource will be needed soon. [Preload: What is it good for?](https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/)
 is a recommended read if you haven't used the feature before.
 
 In simple web apps, it's straight-forward to specify static paths to scripts you
-would like to preload - especially if their names or locations are unlikely to change. In more complex apps, 
-JavaScript can be split into "chunks" (that represent routes or components) at with dynamic 
+would like to preload - especially if their names or locations are unlikely to change. In more complex apps,
+JavaScript can be split into "chunks" (that represent routes or components) at with dynamic
 names. These names can include hashes, numbers and other properties that can change with each build.
 
 For example, `chunk.31132ae6680e598f8879.js`.
 
-To make it easier to wire up async chunks for lazy-loading, this plugin offers a drop-in way to wire them up 
+To make it easier to wire up async chunks for lazy-loading, this plugin offers a drop-in way to wire them up
 using `<link rel='preload'>`.
 
 Pre-requisites
 --------------
-This module requires Webpack 2.2.0 and above. It also requires that you're using 
-[html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) in your Webpack project. 
+This module requires Webpack 2.2.0 and above. It also requires that you're using
+[html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) in your Webpack project.
 
 Installation
 ---------------
@@ -68,30 +68,45 @@ and finally, configure the plugin in your Webpack `plugins` array after `HtmlWeb
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin()
-]  
+]
 ```
 
-By default, the plugin will assume async script chunks will be preloaded with `as=script`.
-This is the equivalent of:
+When preloading files, the plugin will use different `as` attribute depends on the type of each
+file. For each file ends with `.css`, the plugin will preload it with `as=style`, while for all
+other files, `as=script` will be used.
+
+If you do not prefer to determine `as` attribute depends on suffix of filename, you can also
+explicitly name it using `as`:
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    as: 'script'
+  })
+]
+```
+
+By default, the plugin will assume async script chunks will be preloaded. This is the equivalent of:
 
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    as: 'script',
     include: 'asyncChunks'
   })
 ]
 ```
 
-For a project generating two async scripts with dynamically generated names, such as 
+For a project generating two async scripts with dynamically generated names, such as
 `chunk.31132ae6680e598f8879.js` and `chunk.d15e7fdfc91b34bb78c4.js`, the following preloads
 will be injected into the document `<head>`:
 
 ```html
-<link rel="preload" href="chunk.31132ae6680e598f8879.js" as="script">
-<link rel="preload" href="chunk.d15e7fdfc91b34bb78c4.js" as="script">
+<link rel="preload" as="script" href="chunk.31132ae6680e598f8879.js">
+<link rel="preload" as="script" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
 You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using
@@ -102,7 +117,6 @@ plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    as: 'script',
     include: 'all'
   })
 ]
@@ -114,7 +128,6 @@ plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    as: 'script',
     include: ['home']
   })
 ]
@@ -123,7 +136,7 @@ plugins: [
 will inject just this:
 
 ```html
-<link rel="preload" href="home.31132ae6680e598f8879.js" as="script">
+<link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
 ```
 
 Filtering chunks
@@ -186,7 +199,7 @@ submitting a pull request through GitHub.
 Contributing workflow
 ---------------------
 
-`index.js` contains the primary source for the plugin, `test` contains tests and `demo` contains demo code. 
+`index.js` contains the primary source for the plugin, `test` contains tests and `demo` contains demo code.
 
 Test the plugin:
 
@@ -203,16 +216,16 @@ $ npm run lint-fix # fix linting issues
 ```
 
 The project is written in ES2015, but does not use a build-step. This may change depending on
-any Node version support requests posted to the issue tracker. 
+any Node version support requests posted to the issue tracker.
 
 Additional Notes
 ---------------------------
 
-* Be careful not to `preload` resources a user is unlikely to need. This can waste their bandwidth. 
+* Be careful not to `preload` resources a user is unlikely to need. This can waste their bandwidth.
 * Use `preload` for the current session if you think a user is likely to visit the next page. There is no
-100% guarantee preloaded items will end up in the HTTP Cache and read locally beyond this session.
+  100% guarantee preloaded items will end up in the HTTP Cache and read locally beyond this session.
 * If optimising for future sessions, use `prefetch` and `preconnect`. Prefetched resources are maintained
-in the HTTP Cache for at least 5 minutes (in Chrome) regardless of the resource's cachability.
+  in the HTTP Cache for at least 5 minutes (in Chrome) regardless of the resource's cachability.
 
 Related plugins
 --------------------------
