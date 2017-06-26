@@ -17,6 +17,9 @@
 'use strict';
 
 const objectAssign = require('object-assign');
+
+const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
+
 const defaultOptions = {
   rel: 'preload',
   include: 'asyncChunks',
@@ -39,21 +42,14 @@ class PreloadPlugin {
         // get wired up using link rel=preload when using this plugin. This behaviour can be
         // configured to preload all types of chunks or just prefetch chunks as needed.
         if (options.include === undefined || options.include === 'asyncChunks') {
-          let asyncChunksSource = null;
           try {
-            asyncChunksSource = compilation
-              .chunks.filter(chunk => !chunk.isInitial())
-              .map(chunk => chunk.files);
+            extractedChunks = compilation.chunks.filter(chunk => !chunk.isInitial());
           } catch (e) {
-            asyncChunksSource = compilation.chunks
-              .map(chunk => chunk.files);
+            extractedChunks = compilation.chunks;
           }
-          extractedChunks = [].concat.apply([], asyncChunksSource);
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
-          extractedChunks = compilation
-              .chunks
-              .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+          extractedChunks = compilation.chunks;
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
           extractedChunks = compilation
@@ -65,14 +61,12 @@ class PreloadPlugin {
                   return false;
                 }
                 return options.include.indexOf(chunkName) > -1;
-              })
-              .map(chunk => chunk.files)
-              .reduce((prev, curr) => prev.concat(curr), []);
+              });
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
-        extractedChunks.filter(entry => {
+        flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
