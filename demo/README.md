@@ -1,4 +1,4 @@
-# PRPL example with Webpack 2 and React
+# PRPL example with Webpack 3 and React
 
 Note: this is a fork of https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/ which includes
 usage of the Preload plugin and SW Precache.
@@ -9,7 +9,7 @@ You can also [see the preso](http://www.slideshare.net/grgur/prpl-pattern-with-w
 
 ## Stack
 
-- [x] [Webpack 2](https://webpack.github.io)
+- [x] [Webpack 3](https://webpack.github.io)
 - [x] [React 15.4](https://facebook.github.io/react/)
 - [x] [Babel 6](https://babeljs.io/)
 
@@ -19,7 +19,7 @@ You can also [see the preso](http://www.slideshare.net/grgur/prpl-pattern-with-w
 * [Step 2](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/tree/steps/2-preload-and-preexecute) - Preload and parse JS with React Router's [getComponent](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/blob/steps/2-preload-and-preexecute/client/containers/App/index.js#L6)
 * [Step 3](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/tree/steps/3-preload-no-execute) - Preload with '<link rel=preload />' and React Helmet
 * [Step 4](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/tree/steps/4-automatic-preload) - [Custom Webpack plugin](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/blob/steps/4-automatic-preload/webpack.config.js#L43) that creates a JSON file with chunk names
-* [Step 5](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/tree/steps/5-injected-chunk-names) - Custom Webpack 2 plugin that [automatically injects chunk information into HTML](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/blob/steps/5-injected-chunk-names/webpack.config.js#L46). Still using React Helmet to preload chunks
+* [Step 5](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/tree/steps/5-injected-chunk-names) - Custom Webpack 3 plugin that [automatically injects chunk information into HTML](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/blob/steps/5-injected-chunk-names/webpack.config.js#L46). Still using React Helmet to preload chunks
 * [Step 6](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/tree/steps/6-no-helmet-scripttags) - Removed React Helmet dependency and [injecting code with raw JS](https://github.com/ModusCreateOrg/react-dynamic-route-loading-es6/blob/steps/6-no-helmet-scripttags/client/containers/App/index.js#L8) (simplicity FTW)
 
 ## Browser setup
