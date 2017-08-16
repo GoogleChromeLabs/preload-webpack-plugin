@@ -76,6 +76,8 @@ class PreloadPlugin {
             let asValue;
             if (!options.as) {
               asValue = entry.match(/\.css$/) ? 'style' : 'script';
+            } else if (typeof options.as === 'function') {
+              asValue = options.as(entry);
             } else {
               asValue = options.as;
             }

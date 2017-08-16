@@ -88,6 +88,24 @@ plugins: [
 ]
 ```
 
+In case you need more fine control of the `as` atribute, you could also provide a function here.
+When using it, entry name will be provided as the parameter, and function itself should return a
+string for `as` attribute:
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    as(entry) {
+      if (/\.css$/.test(entry)) return 'style';
+      if (/\.png$/.test(entry)) return 'image';
+      return 'script';
+    }
+  })
+]
+```
+
 By default, the plugin will assume async script chunks will be preloaded. This is the equivalent of:
 
 ```js

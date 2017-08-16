@@ -190,6 +190,37 @@ describe('PreloadPlugin preloads normal chunks', function() {
     });
     compiler.outputFileSystem = new MemoryFileSystem();
   });
+
+  it('use custom as attribute based on return value of callback', (done) => {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].css',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as(entry) {
+            if (entry.indexOf('/chunk') === 0) return 'style';
+            return 'script';
+          },
+          include: 'all',
+        }),
+      ],
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="style" href="/chunk');
+      expect(html).toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
 });
 
 describe('PreloadPlugin prefetches normal chunks', function() {
