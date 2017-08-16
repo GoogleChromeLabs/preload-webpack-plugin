@@ -191,6 +191,35 @@ describe('PreloadPlugin preloads normal chunks', function() {
     compiler.outputFileSystem = new MemoryFileSystem();
   });
 
+  it('adds preload using "font" for fonts and add crossorigin attribute', (done) => {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].woff2',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          include: 'all'
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="font" crossorigin="crossorigin" href="/chunk');
+      expect(html).toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+
   it('use custom as attribute based on return value of callback', (done) => {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),

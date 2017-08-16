@@ -75,13 +75,16 @@ class PreloadPlugin {
             // value depends on suffix of filename. Otherwise use the given `as` value.
             let asValue;
             if (!options.as) {
-              asValue = entry.match(/\.css$/) ? 'style' : 'script';
+              if (entry.match(/\.css$/)) asValue = 'style';
+              else if (entry.match(/\.(?:eot|otf|ttf|woff2?)$/)) asValue = 'font';
+              else asValue = 'script';
             } else if (typeof options.as === 'function') {
               asValue = options.as(entry);
             } else {
               asValue = options.as;
             }
-            filesToInclude+= `<link rel="${options.rel}" as="${asValue}" href="${entry}">\n`;
+            const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
+            filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
           } else {
             // If preload isn't specified, the only other valid entry is prefetch here
             // You could specify preconnect but as we're dealing with direct paths to resources

@@ -72,8 +72,9 @@ plugins: [
 ```
 
 When preloading files, the plugin will use different `as` attribute depends on the type of each
-file. For each file ends with `.css`, the plugin will preload it with `as=style`, while for all
-other files, `as=script` will be used.
+file. For each file ends with `.css`, the plugin will preload it with `as=style`, for each file ends
+with `.woff`, `.woff2`, `.eot`, `.otf` or `.ttf`, the plugin will preload it with `as=font`, while
+for all other files, `as=script` will be used.
 
 If you do not prefer to determine `as` attribute depends on suffix of filename, you can also
 explicitly name it using `as`:
@@ -105,6 +106,9 @@ plugins: [
   })
 ]
 ```
+
+Notice that if `as=font` is used in preload, crossorigin will be added, otherwise the font resource
+might be double fetched. Explains can be found in [this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf).
 
 By default, the plugin will assume async script chunks will be preloaded. This is the equivalent of:
 
