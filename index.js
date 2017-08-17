@@ -76,7 +76,7 @@ class PreloadPlugin {
             let asValue;
             if (!options.as) {
               if (entry.match(/\.css$/)) asValue = 'style';
-              else if (entry.match(/\.(?:eot|otf|ttf|woff2?)$/)) asValue = 'font';
+              else if (entry.match(/\.woff2$/)) asValue = 'font';
               else asValue = 'script';
             } else if (typeof options.as === 'function') {
               asValue = options.as(entry);

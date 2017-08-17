@@ -73,8 +73,8 @@ plugins: [
 
 When preloading files, the plugin will use different `as` attribute depends on the type of each
 file. For each file ends with `.css`, the plugin will preload it with `as=style`, for each file ends
-with `.woff`, `.woff2`, `.eot`, `.otf` or `.ttf`, the plugin will preload it with `as=font`, while
-for all other files, `as=script` will be used.
+with `.woff2`, the plugin will preload it with `as=font`, while for all other files, `as=script`
+will be used.
 
 If you do not prefer to determine `as` attribute depends on suffix of filename, you can also
 explicitly name it using `as`:
@@ -100,6 +100,7 @@ plugins: [
     rel: 'preload',
     as(entry) {
       if (/\.css$/.test(entry)) return 'style';
+      if (/\.woff$/.test(entry)) return 'font';
       if (/\.png$/.test(entry)) return 'image';
       return 'script';
     }
