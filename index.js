@@ -17,9 +17,11 @@
 'use strict';
 
 const objectAssign = require('object-assign');
+
+const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
+
 const defaultOptions = {
   rel: 'preload',
-  as: 'script',
   include: 'asyncChunks',
   fileBlacklist: [/\.map/]
 };
@@ -40,21 +42,14 @@ class PreloadPlugin {
         // get wired up using link rel=preload when using this plugin. This behaviour can be
         // configured to preload all types of chunks or just prefetch chunks as needed.
         if (options.include === undefined || options.include === 'asyncChunks') {
-          let asyncChunksSource = null;
           try {
-            asyncChunksSource = compilation
-              .chunks.filter(chunk => !chunk.isInitial())
-              .map(chunk => chunk.files);
+            extractedChunks = compilation.chunks.filter(chunk => !chunk.isInitial());
           } catch (e) {
-            asyncChunksSource = compilation.chunks
-              .map(chunk => chunk.files);
+            extractedChunks = compilation.chunks;
           }
-          extractedChunks = [].concat.apply([], asyncChunksSource);
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
-          extractedChunks = compilation
-              .chunks
-              .reduce((chunks, chunk) => chunks.concat(chunk.files), []);
+          extractedChunks = compilation.chunks;
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
           extractedChunks = compilation
@@ -66,19 +61,30 @@ class PreloadPlugin {
                   return false;
                 }
                 return options.include.indexOf(chunkName) > -1;
-              })
-              .map(chunk => chunk.files)
-              .reduce((prev, curr) => prev.concat(curr), []);
+              });
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
-        extractedChunks.filter(entry => {
+        flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
           if (options.rel === 'preload') {
-            filesToInclude+= `<link rel="${options.rel}" href="${entry}" as="${options.as}">\n`;
+            // If `as` value is not provided in option, dynamically determine the correct
+            // value depends on suffix of filename. Otherwise use the given `as` value.
+            let asValue;
+            if (!options.as) {
+              if (entry.match(/\.css$/)) asValue = 'style';
+              else if (entry.match(/\.woff2$/)) asValue = 'font';
+              else asValue = 'script';
+            } else if (typeof options.as === 'function') {
+              asValue = options.as(entry);
+            } else {
+              asValue = options.as;
+            }
+            const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
+            filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
           } else {
             // If preload isn't specified, the only other valid entry is prefetch here
             // You could specify preconnect but as we're dealing with direct paths to resources
