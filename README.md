@@ -89,7 +89,7 @@ plugins: [
 ]
 ```
 
-In case you need more fine control of the `as` atribute, you could also provide a function here.
+In case you need more fine-grained control of the `as` atribute, you could also provide a function here.
 When using it, entry name will be provided as the parameter, and function itself should return a
 string for `as` attribute:
 
