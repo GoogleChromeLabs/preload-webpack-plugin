@@ -1,6 +1,6 @@
 {
   "name": "preload-webpack-plugin",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Enhances html-webpack-plugin with link rel=preload wiring capabilities for scripts",
   "main": "index.js",
   "scripts": {
@@ -35,10 +35,10 @@
     "eslint-config-google": "^0.7.1",
     "html-webpack-plugin": "^2.26.0",
     "jasmine": "^2.5.3",
-    "webpack": "^2.2.0"
+    "webpack": "^3.2.0"
   },
   "peerDependencies": {
-    "webpack": "^2.2.0"
+    "webpack": "^3.2.0"
   },
   "dependencies": {
     "object-assign": "^4.1.1"
