@@ -177,7 +177,7 @@ plugins: [
 ```
 
 Usually you don't want to preload all of them but only keep the necessary resources, you can use
-`fileBlacklist` shown below to filter.
+`fileBlacklist` or `fileWhitelist` shown below to filter.
 
 Filtering chunks
 ---------------------
@@ -197,6 +197,28 @@ new PreloadWebpackPlugin({
   fileBlacklist: [/\.map/, /\.whatever/]
 })
 ```
+
+If you use `include="all-assets"`, you might find excluding all unnecessary files one by one a
+bit annoying. In this case, you can use `fileWhitelist` to only include the files you want:
+
+```js
+new PreloadWebpackPlugin({
+  fileWhitelist: [/\.files/, /\.to/, /\.include/],
+})
+```
+
+notice that if `fileWhitelist` is not provided, it will not filter any file out.
+
+Also, you could use `fileWhitelist` and `fileBlacklist` together:
+
+```js
+new PreloadWebpackPlugin({
+  fileWhitelist: [/\.files/, /\.to/, /\.include/],
+  fileBlacklist: [/\.files/, /\.to/, /\.exclude/],
+})
+```
+
+In example above, only files with name matches `/\.include/` will be included.
 
 Resource Hints
 ---------------------

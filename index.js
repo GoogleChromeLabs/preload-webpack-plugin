@@ -68,7 +68,14 @@ class PreloadPlugin {
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
-        flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
+        flatten(extractedChunks.map(chunk => chunk.files))
+        .filter(entry => {
+          return (
+            !this.options.fileWhitelist ||
+            this.options.fileWhitelist.some(regex => regex.test(entry) === true)
+          );
+        })
+        .filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
