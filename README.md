@@ -162,6 +162,23 @@ will inject just this:
 <link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
 ```
 
+It is very common in Webpack to use loaders such as `file-loader` to generate assets for specific
+types, such as fonts or images. If you wish to preload these files as well, you can use `include`
+with value `all-assets`:
+
+```js
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    include: 'all-assets',
+  })
+]
+```
+
+Usually you don't want to preload all of them but only keep the necessary resources, you can use
+`fileBlacklist` shown below to filter.
+
 Filtering chunks
 ---------------------
 
