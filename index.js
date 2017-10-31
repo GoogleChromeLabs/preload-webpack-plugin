@@ -20,6 +20,16 @@ const objectAssign = require('object-assign');
 
 const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
 
+const isChunkBelongToHtml = (chunk, roots) => {
+  for (const root of roots) {
+    if (root.hash === chunk.renderedHash) return true;
+  }
+  for (const parent of chunk.parents) {
+    if (isChunkBelongToHtml(parent, roots)) return true;
+  }
+  return false;
+};
+
 const defaultOptions = {
   rel: 'preload',
   include: 'asyncChunks',
@@ -33,10 +43,10 @@ class PreloadPlugin {
 
   apply(compiler) {
     const options = this.options;
-    let filesToInclude = '';
-    let extractedChunks = [];
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+        let filesToInclude = '';
+        let extractedChunks = [];
         // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
         // part of code-splitting with import() or require.ensure(). By default, asyncChunks
         // get wired up using link rel=preload when using this plugin. This behaviour can be
@@ -65,6 +75,9 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
+
+        // Only handle the chunk import by the htmlWebpackPlugin
+        extractedChunks = extractedChunks.filter(chunk => isChunkBelongToHtml(chunk, Object.values(htmlPluginData.assets.chunks)));
 
         flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
