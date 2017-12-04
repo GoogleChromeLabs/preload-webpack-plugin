@@ -279,5 +279,5 @@ the License.
 [npm-url]: https://npmjs.org/package/preload-webpack-plugin
 [npm-img]: https://badge.fury.io/js/preload-webpack-plugin.svg
 [npm-downloads-img]: https://img.shields.io/npm/dm/preload-webpack-plugin.svg?style=flat-square
-[daviddm-img]: https://david-dm.org/googlechrome/preload-webpack-plugin.svg
-[daviddm-url]: https://david-dm.org/googlechrome/preload-webpack-plugin
+[daviddm-img]: https://david-dm.org/googlechromelabs/preload-webpack-plugin.svg
+[daviddm-url]: https://david-dm.org/googlechromelabs/preload-webpack-plugin
