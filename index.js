@@ -32,11 +32,12 @@ class PreloadPlugin {
   }
 
   apply(compiler) {
-    const options = this.options;
-    let filesToInclude = '';
-    let extractedChunks = [];
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+        // allow to define special config in htmlWebpackPlugin's options with `preload` key.
+        const options = objectAssign({}, this.options, htmlPluginData.plugin.options.preload || {});
+        let filesToInclude = '';
+        let extractedChunks = [];
         // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
         // part of code-splitting with import() or require.ensure(). By default, asyncChunks
         // get wired up using link rel=preload when using this plugin. This behaviour can be
@@ -65,10 +66,9 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
-        filesToInclude = ''
 
         flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
-          return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
+          return options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
           if (options.rel === 'preload') {
