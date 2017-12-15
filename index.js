@@ -65,6 +65,7 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
+        filesToInclude = ''
 
         flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
