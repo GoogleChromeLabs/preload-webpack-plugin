@@ -41,6 +41,7 @@
     "webpack": "^3.2.0"
   },
   "dependencies": {
-    "object-assign": "^4.1.1"
+    "object-assign": "^4.1.1",
+    "object.values": "^1.0.4"
   }
 }
