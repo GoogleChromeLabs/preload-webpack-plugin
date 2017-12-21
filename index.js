@@ -16,6 +16,9 @@
  */
 'use strict';
 
+// See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/45
+require('object.values').shim();
+
 const objectAssign = require('object-assign');
 
 const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
