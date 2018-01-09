@@ -73,6 +73,12 @@ class PreloadPlugin {
           } catch (e) {
             extractedChunks = compilation.chunks;
           }
+        } else if (options.include === 'initial') {
+          try {
+            extractedChunks = compilation.chunks.filter(chunk => chunk.isInitial());
+          } catch (e) {
+            extractedChunks = compilation.chunks;
+          }
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
           extractedChunks = compilation.chunks;
