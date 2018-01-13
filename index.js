@@ -16,9 +16,35 @@
  */
 'use strict';
 
+// See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/45
+require('object.values').shim();
+
 const objectAssign = require('object-assign');
 
 const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
+
+const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
+  // Prevent circular recursion.
+  // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
+  if (visitedChunks[chunk.renderedHash]) {
+    return false;
+  }
+  visitedChunks[chunk.renderedHash] = true;
+
+  for (const root of roots) {
+    if (root.hash === chunk.renderedHash) {
+      return true;
+    }
+  }
+
+  for (const parent of chunk.parents) {
+    if (doesChunkBelongToHTML(parent, roots, visitedChunks)) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 const defaultOptions = {
   rel: 'preload',
@@ -33,10 +59,10 @@ class PreloadPlugin {
 
   apply(compiler) {
     const options = this.options;
-    let filesToInclude = '';
-    let extractedChunks = [];
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+        let filesToInclude = '';
+        let extractedChunks = [];
         // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
         // part of code-splitting with import() or require.ensure(). By default, asyncChunks
         // get wired up using link rel=preload when using this plugin. This behaviour can be
@@ -44,6 +70,12 @@ class PreloadPlugin {
         if (options.include === undefined || options.include === 'asyncChunks') {
           try {
             extractedChunks = compilation.chunks.filter(chunk => !chunk.isInitial());
+          } catch (e) {
+            extractedChunks = compilation.chunks;
+          }
+        } else if (options.include === 'initial') {
+          try {
+            extractedChunks = compilation.chunks.filter(chunk => chunk.isInitial());
           } catch (e) {
             extractedChunks = compilation.chunks;
           }
@@ -67,6 +99,10 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
+
+        // Only handle the chunk import by the htmlWebpackPlugin
+        extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
+          chunk, Object.values(htmlPluginData.assets.chunks), {}));
 
         flatten(extractedChunks.map(chunk => chunk.files))
         .filter(entry => {

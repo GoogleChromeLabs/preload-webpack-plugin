@@ -17,11 +17,11 @@ const plugins = [
   /**
    * Extract vendor libraries into a separate bundle
    */
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    minChunks: Infinity,
-    filename: 'vendor.bundle.js'
-  }),
+  // new webpack.optimize.CommonsChunkPlugin({
+  //   name: 'vendor',
+  //   minChunks: 2,
+  //   filename: 'vendor.bundle.js'
+  // }),
 
   /**
    * Define NODE_ENV.
@@ -36,7 +36,15 @@ const plugins = [
    */
   new HtmlWebpackPlugin({
     title: 'React Router + Webpack 2 + Dynamic Chunk Navigation',
-    template: `${sourcePath}/index.ejs`
+    template: `${sourcePath}/index.ejs`,
+    filename: 'index.html',
+    chunks: [ 'bundle', 'vendor' ],
+  }),
+  new HtmlWebpackPlugin({
+    title: 'another test page',
+    template: `${sourcePath}/index.ejs`,
+    filename: 'another.html',
+    chunks: [ 'another' ]
   }),
 
   /**
@@ -121,18 +129,21 @@ module.exports = {
   devtool: isProd ? 'source-map' : 'eval',
   context: sourcePath,
   entry: {
-    js: [
+    bundle: [
       'index',
-      'pages/Home'
+      'pages/Home',
     ],
     vendor: [
       'react',
       'react-dom',
+    ],
+    another: [
+      'another',
     ]
   },
   output: {
     path: staticsPath,
-    filename: 'bundle.js',
+    filename: '[name].js',
     chunkFilename: 'chunk.[chunkhash].js',
     publicPath: '/',
   },
