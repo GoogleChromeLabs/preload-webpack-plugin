@@ -1,4 +1,6 @@
-demo/node_modules
-node_modules
-/haters
+# Directories
+node_modules/
+build/
+
+# Files
 npm-debug.log
