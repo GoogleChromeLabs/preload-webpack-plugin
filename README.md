@@ -175,6 +175,11 @@ plugins: [
 ]
 ```
 
+One thing worth noticing: `file-loader` provides an option to specify `publicPath` just for assets.
+However, that information seems to be lost when this plugin is doing its job. Thus, this plugin
+will use `publicPath` defined in `output` config. It could be an issue, if `publicPath` in `file-loader`
+and `publicPath` in `webpack` config have different values.
+
 Usually you don't want to preload all of them but only keep the necessary resources, you can use
 `fileBlacklist` or `fileWhitelist` shown below to filter.
 
