@@ -367,3 +367,108 @@ describe('filtering unwanted files', function() {
     compiler.outputFileSystem = new MemoryFileSystem();
   });
 });
+
+describe('multiple html', function() {
+  it('each one only include their own chunk', function(done) {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js'),
+        moduleA: path.join(__dirname, 'fixtures', 'module-a.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: '[name].js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      devtool: 'cheap-source-map',
+      plugins: [
+        new HtmlWebpackPlugin({
+          filename: 'index.html',
+          chunks: ['js'],
+        }),
+        new HtmlWebpackPlugin({
+          filename: 'home.html',
+          chunks: ['moduleA'],
+        }),
+        new PreloadPlugin()
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      const homeHtml = result.compilation.assets['home.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/chunk.');
+      expect(homeHtml).not.toContain('<link rel="preload" as="script" href="/chunk.');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+
+  it('exclude by html filename', function(done) {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: '[name].js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      devtool: 'cheap-source-map',
+      plugins: [
+        new HtmlWebpackPlugin({
+          filename: 'index.html',
+          chunks: ['js'],
+        }),
+        new HtmlWebpackPlugin({
+          filename: 'home.html',
+          chunks: ['js'],
+        }),
+        new PreloadPlugin({
+          excludeHtmlNames: ['index.html'],
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      const homeHtml = result.compilation.assets['home.html'].source();
+      expect(html).not.toContain('<link rel="preload" as="script" href="/chunk.');
+      expect(homeHtml).toContain('<link rel="preload" as="script" href="/chunk.');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
+
+describe('filtering unwanted html', function() {
+  it('does not include preload asset into index.html file', function(done) {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      devtool: 'cheap-source-map',
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          excludeHtmlNames: ['index.html'],
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).not.toContain('<link rel="preload" as="script" href="/chunk.');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
