@@ -58,9 +58,10 @@ class PreloadPlugin {
   }
 
   apply(compiler) {
-    const options = this.options;
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+        // allow to define special config in htmlWebpackPlugin's options with `preload` key.
+        const options = objectAssign({}, this.options, htmlPluginData.plugin.options.preload || {});
         let filesToInclude = '';
         let extractedChunks = [];
         // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
@@ -103,7 +104,7 @@ class PreloadPlugin {
           chunk, Object.values(htmlPluginData.assets.chunks), {}));
 
         flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
-          return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
+          return options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
           if (options.rel === 'preload') {
