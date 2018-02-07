@@ -23,13 +23,26 @@ const objectAssign = require('object-assign');
 
 const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
 
-const isChunkBelongToHtml = (chunk, roots) => {
+const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
+  // Prevent circular recursion.
+  // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
+  if (visitedChunks[chunk.renderedHash]) {
+    return false;
+  }
+  visitedChunks[chunk.renderedHash] = true;
+
   for (const root of roots) {
-    if (root.hash === chunk.renderedHash) return true;
+    if (root.hash === chunk.renderedHash) {
+      return true;
+    }
   }
+
   for (const parent of chunk.parents) {
-    if (isChunkBelongToHtml(parent, roots)) return true;
+    if (doesChunkBelongToHTML(parent, roots, visitedChunks)) {
+      return true;
+    }
   }
+
   return false;
 };
 
@@ -60,6 +73,12 @@ class PreloadPlugin {
           } catch (e) {
             extractedChunks = compilation.chunks;
           }
+        } else if (options.include === 'initial') {
+          try {
+            extractedChunks = compilation.chunks.filter(chunk => chunk.isInitial());
+          } catch (e) {
+            extractedChunks = compilation.chunks;
+          }
         } else if (options.include === 'all') {
             // Async chunks, vendor chunks, normal chunks.
           extractedChunks = compilation.chunks;
@@ -80,7 +99,8 @@ class PreloadPlugin {
         const publicPath = compilation.outputOptions.publicPath || '';
 
         // Only handle the chunk import by the htmlWebpackPlugin
-        extractedChunks = extractedChunks.filter(chunk => isChunkBelongToHtml(chunk, Object.values(htmlPluginData.assets.chunks)));
+        extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
+          chunk, Object.values(htmlPluginData.assets.chunks), {}));
 
         flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);

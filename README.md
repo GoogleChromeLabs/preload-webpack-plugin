@@ -132,15 +132,14 @@ will be injected into the document `<head>`:
 <link rel="preload" as="script" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using
-`include`:
+You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using `include: 'all'`, or only preload initial chunks with `include: 'initial'`:
 
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    include: 'all'
+    include: 'all' // or 'initial'
   })
 ]
 ```
