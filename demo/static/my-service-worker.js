@@ -37,7 +37,7 @@
 /* eslint-disable indent, no-unused-vars, no-multiple-empty-lines, max-nested-callbacks, space-before-function-paren, quotes, comma-spacing */
 'use strict';
 
-var precacheConfig = [["/bundle.js","8602b893b8e4d765b4be91b1cd2a35db"],["/index.html","be131eb88d1ceef913565eb54ddeda1c"],["/vendor.bundle.js","f7137f49f1a8645beb00fab8201089b1"]];
+var precacheConfig = [["/another.html","4e0390d1cb1806d13f6bf5b235a12bda"],["/another.js","82ed634fb5211f7176af13e04dc9a010"],["/bundle.js","c1ca36b9f387048eb14a47fbc2f498ff"],["/index.html","9f27bd9376485f5fc3d09a50730e88f5"]];
 var cacheName = 'sw-precache-v2-react-dynamic-route-loading-es6-' + (self.registration ? self.registration.scope : '');
 
 
