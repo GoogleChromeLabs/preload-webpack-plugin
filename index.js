@@ -49,7 +49,8 @@ const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
 const defaultOptions = {
   rel: 'preload',
   include: 'asyncChunks',
-  fileBlacklist: [/\.map/]
+  fileBlacklist: [/\.map/],
+  excludeHtmlNames: [],
 };
 
 class PreloadPlugin {
@@ -61,6 +62,10 @@ class PreloadPlugin {
     const options = this.options;
     compiler.plugin('compilation', compilation => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+        if (this.options.excludeHtmlNames.indexOf(htmlPluginData.plugin.options.filename) > -1) {
+          cb(null, htmlPluginData);
+          return;
+        }
         let filesToInclude = '';
         let extractedChunks = [];
         // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
