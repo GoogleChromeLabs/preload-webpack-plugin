@@ -99,10 +99,13 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
-
-        // Only handle the chunk import by the htmlWebpackPlugin
-        extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
-          chunk, Object.values(htmlPluginData.assets.chunks), {}));
+        
+        // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
+        // allow `all-assets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
+        if (options.include !== 'all-assets') {
+          extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
+            chunk, Object.values(htmlPluginData.assets.chunks), {}));
+        }
 
         flatten(extractedChunks.map(chunk => chunk.files))
         .filter(entry => {
