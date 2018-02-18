@@ -224,6 +224,31 @@ new PreloadWebpackPlugin({
 
 In example above, only files with name matches `/\.include/` will be included.
 
+## Filtering Html
+
+In some case, you may don't want to preload resource on some file. But using `fileBlacklist`  is weird, because you may want to inlcude this chunk on another file. So you can use `excludeHtmlNames` to tell preload plugin to ignore this file.
+
+If you have multiple html like index.html and example.html, you can exclude index.html like this.
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin({
+    filename: 'index.html',
+    template: 'src/index.html',
+    chunks: ['main']
+  }),
+  new HtmlWebpackPlugin({
+    filename: 'example.html',
+    template: 'src/example.html',
+    chunks: ['exampleEntry']
+  }),
+  // I want this to affect only index.html
+  new PreloadWebpackPlugin({
+    excludeHtmlNames: ['index.html'],
+  })
+]
+```
+
 Resource Hints
 ---------------------
 
