@@ -78,6 +78,38 @@ describe('PreloadPlugin preloads or prefetches async chunks', function() {
     compiler.outputFileSystem = new MemoryFileSystem();
   });
 
+  it('adds dynamic prefetch tags to async chunks', function(done) {
+    const relFunction = function(params) {
+      expect(params.filename).toBe('index.html');
+      expect(params.entry).toMatch(/^\/chunk\.[0-9a-f]+\.js$/);
+      return 'prefetch';
+    };
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: relFunction
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="prefetch" href="/chunk.');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+
   it('respects publicPath', function(done) {
     const compiler = webpack({
       entry: {
@@ -263,6 +295,37 @@ describe('PreloadPlugin prefetches normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'prefetch',
+          include: 'all'
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="prefetch" href="0');
+      expect(html).toContain('<link rel="prefetch" href="main.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
+
+describe('PreloadPlugin dynamically preloads/prefetches normal chunks', function() {
+  it('adds prefetch tags', function(done) {
+    const relFunction = function(params) {
+      expect(params.filename).toBe('index.html');
+      expect(params.entry).toMatch(/0\.js|main\.js/);
+      return 'prefetch';
+    };
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: relFunction,
           include: 'all'
         })
       ]
