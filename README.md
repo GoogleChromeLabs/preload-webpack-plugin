@@ -180,6 +180,8 @@ new PreloadWebpackPlugin({
 })
 ```
 
+Moreover, if you need more control over what to include, have a look at [this](#resource-hints).
+
 ## Filtering Html
 
 In some case, you may don't want to preload resource on some file. But using `fileBlacklist`  is werid, because you may want to inlcude this chunk on another file. So you can use `excludeHtmlNames` to tell preload plugin to ignore this file.
@@ -226,6 +228,27 @@ For the async chunks mentioned earlier, the plugin would update your HTML to the
 ```html
 <link rel="prefetch" href="chunk.31132ae6680e598f8879.js">
 <link rel="prefetch" href="chunk.d15e7fdfc91b34bb78c4.js">
+```
+
+If you want to decide `prefetch` or `preload` (or ignore) by your custom logic, you can pass a function to the plugin:
+
+```js
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: function(params) {
+      // This function will be invoked per-html-per-chunk.
+      var filename = params.filename; // HTML filename
+      var entry = params.entry; // chunk filename, includes publicPath (not chunk name!)
+      var htmlPluginData = params.htmlPluginData; // refer to html-webpack-plugin docs
+      var options = params.options; // the option itself, in case you need it
+      // ...
+      // return 'preload';
+      // return 'prefetch';
+      return null; // if you return undefined, null, or '', this chunk will not be injected to this html.
+    }
+  })
+]
 ```
 
 Demo

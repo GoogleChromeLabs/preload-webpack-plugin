@@ -111,7 +111,24 @@ class PreloadPlugin {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;
-          if (options.rel === 'preload') {
+          let relValue;
+          if (!options.rel) {
+            relValue = 'preload';
+          } else if (typeof options.rel === 'function') {
+            relValue = options.rel({
+              filename: htmlPluginData.plugin.options.filename,
+              entry,
+              htmlPluginData,
+              options,
+            });
+            if (!relValue) {
+              // no rel specified, ignore this chunk
+              return;
+            }
+          } else {
+            relValue = options.rel;
+          }
+          if (relValue === 'preload') {
             // If `as` value is not provided in option, dynamically determine the correct
             // value depends on suffix of filename. Otherwise use the given `as` value.
             let asValue;
@@ -125,12 +142,12 @@ class PreloadPlugin {
               asValue = options.as;
             }
             const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
-            filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
+            filesToInclude+= `<link rel="${relValue}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
           } else {
             // If preload isn't specified, the only other valid entry is prefetch here
             // You could specify preconnect but as we're dealing with direct paths to resources
             // instead of origins that would make less sense.
-            filesToInclude+= `<link rel="${options.rel}" href="${entry}">\n`;
+            filesToInclude+= `<link rel="${relValue}" href="${entry}">\n`;
           }
         });
         if (htmlPluginData.html.indexOf('</head>') !== -1) {
