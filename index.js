@@ -121,6 +121,10 @@ class PreloadPlugin {
               htmlPluginData,
               options,
             });
+            if (!relValue) {
+              // no rel specified, ignore this chunk
+              return;
+            }
           } else {
             relValue = options.rel;
           }
