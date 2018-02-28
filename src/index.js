@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
 
-// See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/45
-require('object.values').shim();
+const DEFAULT_OPTIONS = {
+  rel: 'preload',
+  include: 'asyncChunks',
+  fileBlacklist: [/\.map/]
+};
 
-const objectAssign = require('object-assign');
+function flatten(arr) {
+  return arr.reduce((prev, curr) => prev.concat(curr), []);
+}
 
-const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
-
-const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
+function doesChunkBelongToHTML(chunk, roots, visitedChunks) {
   // Prevent circular recursion.
   // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
   if (visitedChunks[chunk.renderedHash]) {
@@ -44,17 +46,11 @@ const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
   }
 
   return false;
-};
-
-const defaultOptions = {
-  rel: 'preload',
-  include: 'asyncChunks',
-  fileBlacklist: [/\.map/]
-};
+}
 
 class PreloadPlugin {
   constructor(options) {
-    this.options = objectAssign({}, defaultOptions, options);
+    this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   }
 
   apply(compiler) {

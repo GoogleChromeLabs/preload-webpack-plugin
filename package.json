@@ -1,16 +1,13 @@
 {
   "name": "preload-webpack-plugin",
-  "version": "2.2.0",
-  "description": "Enhances html-webpack-plugin with link rel=preload wiring capabilities for scripts",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint --quiet -f codeframe index.js test/spec.js",
-    "lint-fix": "eslint --fix --quiet -f codeframe index.js test/spec.js",
-    "test": "node_modules/jasmine/bin/jasmine.js test/spec.js"
+  "version": "3.0.0",
+  "description": "A webpack plugin for injecting <link rel='preload|prefecth'> into HtmlWebpackPlugin pages, with async chunk support",
+  "author": "Addy Osmani <addy.osmani@gmail.com> (https://github.com/addyosmani)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/googlechromelabs/preload-webpack-plugin/issues"
   },
-  "files": [
-    "index.js"
-  ],
+  "homepage": "https://github.com/googlechromelabs/preload-webpack-plugin",
   "repository": {
     "type": "git",
     "url": "https://github.com/googlechromelabs/preload-webpack-plugin.git"
@@ -23,25 +20,35 @@
     "preload",
     "resource hints"
   ],
-  "author": "Addy Osmani <addy.osmani@gmail.com> (https://github.com/addyosmani)",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/googlechromelabs/preload-webpack-plugin/issues"
+  "engines": {
+    "node": ">=4.0.0"
   },
-  "homepage": "https://github.com/googlechromelabs/preload-webpack-plugin",
+  "scripts": {
+    "lint": "eslint --format=codeframe .",
+    "test": "jasmine test/spec.js",
+    "clean": "rimraf build",
+    "build": "npm run clean && babel --out-dir=build src"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
+    "@babel/cli": "^7.0.0-beta.38",
+    "@babel/core": "^7.0.0-beta.38",
+    "@babel/plugin-transform-runtime": "^7.0.0-beta.38",
+    "@babel/preset-env": "^7.0.0-beta.38",
     "eslint": "^3.14.1",
     "eslint-config-google": "^0.7.1",
     "html-webpack-plugin": "^2.26.0",
     "jasmine": "^2.5.3",
+    "rimraf": "^2.6.2",
     "webpack": "^3.2.0"
   },
   "peerDependencies": {
     "webpack": "^3.2.0"
   },
   "dependencies": {
-    "object-assign": "^4.1.1",
-    "object.values": "^1.0.4"
+    "@babel/runtime": "^7.0.0-beta.38"
   }
 }
