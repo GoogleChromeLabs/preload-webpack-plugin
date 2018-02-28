@@ -132,14 +132,14 @@ will be injected into the document `<head>`:
 <link rel="preload" as="script" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using `include: 'all'`, or only preload initial chunks with `include: 'initial'`:
+You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using `include: 'allChunks'`, or only preload initial chunks with `include: 'initial'`:
 
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    include: 'all' // or 'initial'
+    include: 'allChunks' // or 'initial'
   })
 ]
 ```
@@ -161,6 +161,28 @@ will inject just this:
 <link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
 ```
 
+It is very common in Webpack to use loaders such as `file-loader` to generate assets for specific
+types, such as fonts or images. If you wish to preload these files as well, you can use `include`
+with value `allAssets`:
+
+```js
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    include: 'allAssets',
+  })
+]
+```
+
+One thing worth noticing: `file-loader` provides an option to specify `publicPath` just for assets.
+However, that information seems to be lost when this plugin is doing its job. Thus, this plugin
+will use `publicPath` defined in `output` config. It could be an issue, if `publicPath` in `file-loader`
+and `publicPath` in `webpack` config have different values.
+
+Usually you don't want to preload all of them but only keep the necessary resources, you can use
+`fileBlacklist` or `fileWhitelist` shown below to filter.
+
 Filtering chunks
 ---------------------
 
@@ -180,9 +202,31 @@ new PreloadWebpackPlugin({
 })
 ```
 
-## Filtering Html
+If you use `include="allAssets"`, you might find excluding all unnecessary files one by one a
+bit annoying. In this case, you can use `fileWhitelist` to only include the files you want:
 
-In some case, you may don't want to preload resource on some file. But using `fileBlacklist`  is werid, because you may want to inlcude this chunk on another file. So you can use `excludeHtmlNames` to tell preload plugin to ignore this file.
+```js
+new PreloadWebpackPlugin({
+  fileWhitelist: [/\.files/, /\.to/, /\.include/],
+})
+```
+
+notice that if `fileWhitelist` is not provided, it will not filter any file out.
+
+Also, you could use `fileWhitelist` and `fileBlacklist` together:
+
+```js
+new PreloadWebpackPlugin({
+  fileWhitelist: [/\.files/, /\.to/, /\.include/],
+  fileBlacklist: [/\.files/, /\.to/, /\.exclude/],
+})
+```
+
+In example above, only files with name matches `/\.include/` will be included.
+
+## Filtering HTML
+
+In some case, you may don't want to preload resource on some file. But using `fileBlacklist`  is weird, because you may want to inlcude this chunk on another file. So you can use `excludeHtmlNames` to tell preload plugin to ignore this file.
 
 If you have multiple html like index.html and example.html, you can exclude index.html like this.
 
@@ -201,8 +245,7 @@ plugins: [
   // I want this to affect only index.html
   new PreloadWebpackPlugin({
     excludeHtmlNames: ['index.html'],
-  })     
-]
+  })
 ```
 
 Resource Hints

@@ -84,9 +84,16 @@ class PreloadPlugin {
           } catch (e) {
             extractedChunks = compilation.chunks;
           }
-        } else if (options.include === 'all') {
-            // Async chunks, vendor chunks, normal chunks.
+        } else if (options.include === 'allChunks' || options.include === 'all') {
+          if (options.include === 'all') {
+            /* eslint-disable no-console */
+            console.warn('[WARNING]: { include: "all" } is deprecated, please use "allChunks" instead.');
+            /* eslint-enable no-console */
+          }
+          // Async chunks, vendor chunks, normal chunks.
           extractedChunks = compilation.chunks;
+        } else if (options.include === 'allAssets') {
+          extractedChunks = [{files: Object.keys(compilation.assets)}];
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
           extractedChunks = compilation
@@ -103,11 +110,21 @@ class PreloadPlugin {
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
-        // Only handle the chunk import by the htmlWebpackPlugin
-        extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
-          chunk, Object.values(htmlPluginData.assets.chunks), {}));
+        // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
+        // allow `allAssets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
+        if (options.include !== 'allAssets') {
+          extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
+            chunk, Object.values(htmlPluginData.assets.chunks), {}));
+        }
 
-        flatten(extractedChunks.map(chunk => chunk.files)).filter(entry => {
+        flatten(extractedChunks.map(chunk => chunk.files))
+        .filter(entry => {
+          return (
+            !this.options.fileWhitelist ||
+            this.options.fileWhitelist.some(regex => regex.test(entry) === true)
+          );
+        })
+        .filter(entry => {
           return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
         }).forEach(entry => {
           entry = `${publicPath}${entry}`;

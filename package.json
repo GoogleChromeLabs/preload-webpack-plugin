@@ -31,11 +31,14 @@
   "homepage": "https://github.com/googlechromelabs/preload-webpack-plugin",
   "devDependencies": {
     "babel-eslint": "^7.1.1",
+    "css-loader": "^0.28.7",
     "eslint": "^3.14.1",
     "eslint-config-google": "^0.7.1",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "file-loader": "^0.11.2",
     "html-webpack-plugin": "^2.26.0",
     "jasmine": "^2.5.3",
-    "webpack": "^3.2.0"
+    "webpack": "^3.4.0"
   },
   "peerDependencies": {
     "webpack": "^3.2.0"

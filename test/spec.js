@@ -23,6 +23,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const PreloadPlugin = require('../');
 const OUTPUT_DIR = path.join(__dirname, 'dist');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 describe('PreloadPlugin preloads or prefetches async chunks', function() {
   it('adds preload tags to async chunks', function(done) {
@@ -120,7 +121,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new PreloadPlugin({
           rel: 'preload',
           as: 'script',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -149,7 +150,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'preload',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -177,7 +178,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new PreloadPlugin({
           rel: 'preload',
           as: 'script',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -206,7 +207,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'preload',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -237,7 +238,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
             if (entry.indexOf('/chunk') === 0) return 'style';
             return 'script';
           },
-          include: 'all',
+          include: 'allChunks',
         }),
       ],
     }, function(err, result) {
@@ -263,7 +264,7 @@ describe('PreloadPlugin prefetches normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'prefetch',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -333,6 +334,94 @@ describe('PreloadPlugin filters chunks', function() {
       expect(html).toContain('<link rel="preload" as="script" href="/home.js');
       expect(html).toContain('<link rel="preload" as="script" href="/home.js.map');
       expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+  it('use fileWhitelist to include only specific files', (done) => {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      devtool: 'cheap-source-map',
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: '[name].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as: 'script',
+          fileWhitelist: [/home/],
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/home.js');
+      // exclude by default fileBlacklist
+      expect(html).not.toContain('<link rel="preload" as="script" href="/home.js.map');
+      // not included in fileWhitelist
+      expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
+
+describe('PreloadPlugin preloads all assets', function() {
+  it('adds preload tags', function(done) {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'load-css.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      module: {
+        rules: [
+          {
+            test: /\.css$/,
+            loader: ExtractTextPlugin.extract({
+              fallback: 'css-loader',
+              use: [
+                {
+                  loader: 'css-loader',
+                },
+              ],
+            }),
+          },
+          {
+            test: /\.woff2?$/,
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+            },
+          },
+        ],
+      },
+      plugins: [
+        new ExtractTextPlugin({
+          filename: 'style.css',
+          allChunks: true,
+        }),
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          include: 'allAssets'
+        }),
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/chunk');
+      expect(html).toContain('<link rel="preload" as="script" href="/bundle.js"');
+      expect(html).toContain('<link rel="preload" as="style" href="/style.css"');
+      expect(html).toContain('<link rel="preload" as="font" crossorigin="crossorigin" href="/font.woff2"');
       done();
     });
     compiler.outputFileSystem = new MemoryFileSystem();
