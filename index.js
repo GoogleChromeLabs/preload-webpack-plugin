@@ -84,10 +84,15 @@ class PreloadPlugin {
           } catch (e) {
             extractedChunks = compilation.chunks;
           }
-        } else if (options.include === 'all') {
-            // Async chunks, vendor chunks, normal chunks.
+        } else if (options.include === 'allChunks' || options.include === 'all') {
+          if (options.include === 'all') {
+            /* eslint-disable no-console */
+            console.warn('[WARNING]: { include: "all" } is deprecated, please use "allChunks" instead.');
+            /* eslint-enable no-console */
+          }
+          // Async chunks, vendor chunks, normal chunks.
           extractedChunks = compilation.chunks;
-        } else if (options.include === 'all-assets') {
+        } else if (options.include === 'allAssets') {
           extractedChunks = [{files: Object.keys(compilation.assets)}];
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
@@ -104,10 +109,10 @@ class PreloadPlugin {
         }
 
         const publicPath = compilation.outputOptions.publicPath || '';
-        
+
         // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
-        // allow `all-assets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
-        if (options.include !== 'all-assets') {
+        // allow `allAssets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
+        if (options.include !== 'allAssets') {
           extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
             chunk, Object.values(htmlPluginData.assets.chunks), {}));
         }

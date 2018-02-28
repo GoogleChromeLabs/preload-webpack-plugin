@@ -121,7 +121,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new PreloadPlugin({
           rel: 'preload',
           as: 'script',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -150,7 +150,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'preload',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -178,7 +178,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new PreloadPlugin({
           rel: 'preload',
           as: 'script',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -207,7 +207,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'preload',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -238,7 +238,7 @@ describe('PreloadPlugin preloads normal chunks', function() {
             if (entry.indexOf('/chunk') === 0) return 'style';
             return 'script';
           },
-          include: 'all',
+          include: 'allChunks',
         }),
       ],
     }, function(err, result) {
@@ -264,7 +264,7 @@ describe('PreloadPlugin prefetches normal chunks', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'prefetch',
-          include: 'all'
+          include: 'allChunks'
         })
       ]
     }, function(err, result) {
@@ -411,7 +411,7 @@ describe('PreloadPlugin preloads all assets', function() {
         new HtmlWebpackPlugin(),
         new PreloadPlugin({
           rel: 'preload',
-          include: 'all-assets'
+          include: 'allAssets'
         }),
       ]
     }, function(err, result) {

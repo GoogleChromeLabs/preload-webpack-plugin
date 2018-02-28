@@ -132,14 +132,14 @@ will be injected into the document `<head>`:
 <link rel="preload" as="script" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using `include: 'all'`, or only preload initial chunks with `include: 'initial'`:
+You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using `include: 'allChunks'`, or only preload initial chunks with `include: 'initial'`:
 
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    include: 'all' // or 'initial'
+    include: 'allChunks' // or 'initial'
   })
 ]
 ```
@@ -163,14 +163,14 @@ will inject just this:
 
 It is very common in Webpack to use loaders such as `file-loader` to generate assets for specific
 types, such as fonts or images. If you wish to preload these files as well, you can use `include`
-with value `all-assets`:
+with value `allAssets`:
 
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    include: 'all-assets',
+    include: 'allAssets',
   })
 ]
 ```
@@ -202,7 +202,7 @@ new PreloadWebpackPlugin({
 })
 ```
 
-If you use `include="all-assets"`, you might find excluding all unnecessary files one by one a
+If you use `include="allAssets"`, you might find excluding all unnecessary files one by one a
 bit annoying. In this case, you can use `fileWhitelist` to only include the files you want:
 
 ```js
