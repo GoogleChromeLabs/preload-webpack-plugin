@@ -79,24 +79,22 @@ class PreloadPlugin {
         }
         let filesToInclude = '';
         let extractedChunks = [];
+        const initialChunkGroups = compilation.chunkGroups.filter(chunkGroup => chunkGroup.isInitial());
+        const initialChunks = initialChunkGroups.reduce((initialChunks, {chunks}) => {
+          return initialChunks.concat(chunks);
+        }, []);
         // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
         // part of code-splitting with import() or require.ensure(). By default, asyncChunks
         // get wired up using link rel=preload when using this plugin. This behaviour can be
         // configured to preload all types of chunks or just prefetch chunks as needed.
         if (options.include === undefined || options.include === 'asyncChunks') {
-          const initialChunkGroups = compilation.chunkGroups.filter(chunkGroup => chunkGroup.isInitial());
-          const initialChunks = initialChunkGroups.reduce((initialChunks, {chunks}) => {
-            return initialChunks.concat(chunks);
-          }, []);
           extractedChunks = compilation.chunks.filter(chunk => {
             return initialChunks.indexOf(chunk) < 0;
           });
         } else if (options.include === 'initial') {
-          try {
-            extractedChunks = compilation.chunks.groupsIterable.filter(chunk => chunk.isOnlyInitial());
-          } catch (e) {
-            extractedChunks = compilation.chunks;
-          }
+          extractedChunks = compilation.chunks.filter(chunk => {
+            return initialChunks.indexOf(chunk) > -1;
+          });
         } else if (options.include === 'allChunks' || options.include === 'all') {
           if (options.include === 'all') {
             /* eslint-disable no-console */
@@ -120,8 +118,6 @@ class PreloadPlugin {
               return options.include.indexOf(chunkName) > -1;
             });
         }
-
-        console.log('_____________________', extractedChunks)
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
