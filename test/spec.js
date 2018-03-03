@@ -45,7 +45,6 @@ describe('PreloadPlugin preloads or prefetches async chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      console.warn(html);
       expect(html).toContain('<link rel="preload" as="script" href="/chunk.');
       expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.');
       done();
@@ -53,58 +52,58 @@ describe('PreloadPlugin preloads or prefetches async chunks', function() {
     compiler.outputFileSystem = new MemoryFileSystem();
   });
 
-//   it('adds prefetch tags to async chunks', function(done) {
-//     const compiler = webpack({
-//       entry: {
-//         js: path.join(__dirname, 'fixtures', 'file.js')
-//       },
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: 'chunk.[chunkhash].js',
-//         publicPath: '/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin({
-//           rel: 'prefetch'
-//         })
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="prefetch" href="/chunk.');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
+  it('adds prefetch tags to async chunks', function(done) {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'prefetch'
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="prefetch" href="/chunk.');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
 
-//   it('respects publicPath', function(done) {
-//     const compiler = webpack({
-//       entry: {
-//         js: path.join(__dirname, 'fixtures', 'file.js')
-//       },
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: 'chunk.[chunkhash].js',
-//         publicPath: 'http://mycdn.com/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin()
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="script" href="http://mycdn.com/chunk.');
-//       expect(html).not.toContain('<link rel="preload" as="script" href="http://mycdn.com/bundle.');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
+  it('respects publicPath', function(done) {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: 'http://mycdn.com/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin()
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="http://mycdn.com/chunk.');
+      expect(html).not.toContain('<link rel="preload" as="script" href="http://mycdn.com/bundle.');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
 // });
 
 // describe('PreloadPlugin preloads normal chunks', function() {
