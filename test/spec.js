@@ -282,98 +282,100 @@ describe('PreloadPlugin prefetches normal chunks', function() {
 });
 
 describe('PreloadPlugin filters chunks', function() {
-//   it('based on chunkname', function(done) {
-//     const compiler = webpack({
-//       entry: path.join(__dirname, 'fixtures', 'file.js'),
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: '[name].[chunkhash].js',
-//         publicPath: '/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin({
-//           rel: 'preload',
-//           as: 'script',
-//           include: ['home']
-//         })
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="script" href="/home');
-//       expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
-//   it('based on chunkname with sourcemap', function(done) {
-//     const compiler = webpack({
-//       entry: path.join(__dirname, 'fixtures', 'file.js'),
-//       devtool: 'cheap-source-map',
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: '[name].js',
-//         publicPath: '/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin({
-//           rel: 'preload',
-//           as: 'script',
-//           include: ['home'],
-//           // disable default file blacklist, to include map file
-//           fileBlacklist: [],
-//         })
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="script" href="/home.js');
-//       expect(html).toContain('<link rel="preload" as="script" href="/home.js.map');
-//       expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
-//   it('use fileWhitelist to include only specific files', (done) => {
-//     const compiler = webpack({
-//       entry: path.join(__dirname, 'fixtures', 'file.js'),
-//       devtool: 'cheap-source-map',
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: '[name].js',
-//         publicPath: '/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin({
-//           rel: 'preload',
-//           as: 'script',
-//           fileWhitelist: [/home/],
-//         })
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="script" href="/home.js');
-//       // exclude by default fileBlacklist
-//       expect(html).not.toContain('<link rel="preload" as="script" href="/home.js.map');
-//       // not included in fileWhitelist
-//       expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
-// });
+  it('based on chunkname', function(done) {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: '[name].[chunkhash].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as: 'script',
+          include: ['home']
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/home');
+      expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
 
-// describe('PreloadPlugin preloads all assets', function() {
+  it('based on chunkname with sourcemap', function(done) {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      devtool: 'cheap-source-map',
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: '[name].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as: 'script',
+          include: ['home'],
+          // disable default file blacklist, to include map file
+          fileBlacklist: [],
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/home.js');
+      expect(html).toContain('<link rel="preload" as="script" href="/home.js.map');
+      expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+
+  it('use fileWhitelist to include only specific files', (done) => {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      devtool: 'cheap-source-map',
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: '[name].js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as: 'script',
+          fileWhitelist: [/home/],
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/home.js');
+      // exclude by default fileBlacklist
+      expect(html).not.toContain('<link rel="preload" as="script" href="/home.js.map');
+      // not included in fileWhitelist
+      expect(html).not.toContain('<link rel="preload" as="script" href="/bundle.js"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
+
+describe('PreloadPlugin preloads all assets', function() {
 //   it('adds preload tags', function(done) {
 //     const compiler = webpack({
 //       entry: path.join(__dirname, 'fixtures', 'load-css.js'),

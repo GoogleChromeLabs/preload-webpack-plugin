@@ -108,7 +108,6 @@ class PreloadPlugin {
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
           extractedChunks = compilation.chunks
-            .groupsIterable
             .filter((chunk) => {
               const chunkName = chunk.name;
               // Works only for named chunks
