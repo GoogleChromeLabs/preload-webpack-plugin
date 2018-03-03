@@ -21,6 +21,12 @@ require('object.values').shim();
 
 const objectAssign = require('object-assign');
 
+const PLUGIN_NAME = 'preload-webpack-plugin';
+
+const weblog = require('webpack-log');
+const Entrypoint = require('webpack/lib/Entrypoint');
+const log = weblog({name: PLUGIN_NAME});
+
 const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
 
 const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
@@ -60,8 +66,13 @@ class PreloadPlugin {
 
   apply(compiler) {
     const options = this.options;
-    compiler.plugin('compilation', compilation => {
-      compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, cb) => {
+    compiler.hooks['compilation'].tap(PLUGIN_NAME, (compilation) => {
+      if (!compilation.hooks.htmlWebpackPluginAfterHtmlProcessing) {
+        const message = `compilation.hooks.htmlWebpackPluginAfterHtmlProcessing is lost. Please make sure you have installed html-webpack-plugin and put it before ${PLUGIN_NAME}`;
+        log.error(message);
+        throw new Error(message);
+      }
+      compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, cb) => {
         if (this.options.excludeHtmlNames.indexOf(htmlPluginData.plugin.options.filename) > -1) {
           cb(null, htmlPluginData);
           return;
@@ -73,14 +84,16 @@ class PreloadPlugin {
         // get wired up using link rel=preload when using this plugin. This behaviour can be
         // configured to preload all types of chunks or just prefetch chunks as needed.
         if (options.include === undefined || options.include === 'asyncChunks') {
-          try {
-            extractedChunks = compilation.chunks.filter(chunk => !chunk.isInitial());
-          } catch (e) {
-            extractedChunks = compilation.chunks;
-          }
+          const initialChunkGroups = compilation.chunkGroups.filter(chunkGroup => chunkGroup.isInitial());
+          const initialChunks = initialChunkGroups.reduce((initialChunks, {chunks}) => {
+            return initialChunks.concat(chunks);
+          }, []);
+          extractedChunks = compilation.chunks.filter(chunk => {
+            return initialChunks.indexOf(chunk) < 0;
+          });
         } else if (options.include === 'initial') {
           try {
-            extractedChunks = compilation.chunks.filter(chunk => chunk.isInitial());
+            extractedChunks = compilation.chunks.groupsIterable.filter(chunk => chunk.isOnlyInitial());
           } catch (e) {
             extractedChunks = compilation.chunks;
           }
@@ -96,60 +109,79 @@ class PreloadPlugin {
           extractedChunks = [{files: Object.keys(compilation.assets)}];
         } else if (Array.isArray(options.include)) {
           // Keep only user specified chunks
-          extractedChunks = compilation
-              .chunks
-              .filter((chunk) => {
-                const chunkName = chunk.name;
-                // Works only for named chunks
-                if (!chunkName) {
-                  return false;
-                }
-                return options.include.indexOf(chunkName) > -1;
-              });
+          extractedChunks = compilation.chunks
+            .groupsIterable
+            .filter((chunk) => {
+              const chunkName = chunk.name;
+              // Works only for named chunks
+              if (!chunkName) {
+                return false;
+              }
+              return options.include.indexOf(chunkName) > -1;
+            });
         }
+
+        console.log('_____________________', extractedChunks)
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
         // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
         // allow `allAssets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
-        if (options.include !== 'allAssets') {
-          extractedChunks = extractedChunks.filter(chunk => doesChunkBelongToHTML(
-            chunk, Object.values(htmlPluginData.assets.chunks), {}));
-        }
+        // if (options.include !== 'allAssets') {
+        //   extractedChunks = extractedChunks.filter(chunk => {
+        //     const rootChunksHashs = Object.values(htmlPluginData.assets.chunks).map(({hash}) => hash);
+        //     const rootChunkGroups = compilation.chunkGroups.reduce((groups, chunkGroup) => {
+        //       const isRootChunkGroup = chunkGroup.chunks.reduce((flag, chunk) => {
+        //         return flag ||
+        //           rootChunksHashs.indexOf(chunk.renderedHash) > -1;
+        //       }, false);
+        //       if (isRootChunkGroup) groups.push(chunkGroup);
+        //       return groups;
+        //     }, []);
+        //     return rootChunkGroups.reduce((flag, chunkGroup) => {
+        //       return flag ||
+        //         chunk.isInGroup(chunkGroup);
+        //     }, false);
+        //     // console.log(Object.values(htmlPluginData.assets.chunks));
+        //     // console.warn(compilation.chunkGroups);
+        //     // doesChunkBelongToHTML(
+        //     //   chunk, Object.values(htmlPluginData.assets.chunks), {});
+        //   });
+        // }
 
         flatten(extractedChunks.map(chunk => chunk.files))
-        .filter(entry => {
-          return (
-            !this.options.fileWhitelist ||
+          .filter(entry => {
+            return (
+              !this.options.fileWhitelist ||
             this.options.fileWhitelist.some(regex => regex.test(entry) === true)
-          );
-        })
-        .filter(entry => {
-          return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
-        }).forEach(entry => {
-          entry = `${publicPath}${entry}`;
-          if (options.rel === 'preload') {
+            );
+          })
+          .filter(entry => {
+            return this.options.fileBlacklist.every(regex => regex.test(entry) === false);
+          }).forEach(entry => {
+            entry = `${publicPath}${entry}`;
+            if (options.rel === 'preload') {
             // If `as` value is not provided in option, dynamically determine the correct
             // value depends on suffix of filename. Otherwise use the given `as` value.
-            let asValue;
-            if (!options.as) {
-              if (entry.match(/\.css$/)) asValue = 'style';
-              else if (entry.match(/\.woff2$/)) asValue = 'font';
-              else asValue = 'script';
-            } else if (typeof options.as === 'function') {
-              asValue = options.as(entry);
+              let asValue;
+              if (!options.as) {
+                if (entry.match(/\.css$/)) asValue = 'style';
+                else if (entry.match(/\.woff2$/)) asValue = 'font';
+                else asValue = 'script';
+              } else if (typeof options.as === 'function') {
+                asValue = options.as(entry);
+              } else {
+                asValue = options.as;
+              }
+              const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
+              filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
             } else {
-              asValue = options.as;
-            }
-            const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
-            filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
-          } else {
             // If preload isn't specified, the only other valid entry is prefetch here
             // You could specify preconnect but as we're dealing with direct paths to resources
             // instead of origins that would make less sense.
-            filesToInclude+= `<link rel="${options.rel}" href="${entry}">\n`;
-          }
-        });
+              filesToInclude+= `<link rel="${options.rel}" href="${entry}">\n`;
+            }
+          });
         if (htmlPluginData.html.indexOf('</head>') !== -1) {
           // If a valid closing </head> is found, update it to include preload/prefetch tags
           htmlPluginData.html = htmlPluginData.html.replace('</head>', filesToInclude + '</head>');
