@@ -375,7 +375,7 @@ describe('PreloadPlugin filters chunks', function() {
   });
 });
 
-describe('PreloadPlugin preloads all assets', function() {
+// describe('PreloadPlugin preloads all assets', function() {
 //   it('adds preload tags', function(done) {
 //     const compiler = webpack({
 //       entry: path.join(__dirname, 'fixtures', 'load-css.js'),
@@ -432,36 +432,36 @@ describe('PreloadPlugin preloads all assets', function() {
 //   });
 // });
 
-// describe('filtering unwanted files', function() {
-//   it('does not include map files to be preloaded', function(done) {
-//     const compiler = webpack({
-//       entry: {
-//         js: path.join(__dirname, 'fixtures', 'file.js')
-//       },
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: 'chunk.[chunkhash].js',
-//         publicPath: '/',
-//       },
-//       devtool: 'cheap-source-map',
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin()
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="script" href="/chunk.');
-//       expect(html).not.toContain('.map"');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
-// });
+describe('filtering unwanted files', function() {
+  it('does not include map files to be preloaded', function(done) {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].js',
+        publicPath: '/',
+      },
+      devtool: 'cheap-source-map',
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin()
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/chunk.');
+      expect(html).not.toContain('.map"');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+});
 
-// describe('multiple html', function() {
+describe('multiple html', function() {
 //   it('each one only include their own chunk', function(done) {
 //     const compiler = webpack({
 //       entry: {
