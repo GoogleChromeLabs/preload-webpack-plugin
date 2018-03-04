@@ -24,7 +24,6 @@ const objectAssign = require('object-assign');
 const PLUGIN_NAME = 'preload-webpack-plugin';
 
 const weblog = require('webpack-log');
-const Entrypoint = require('webpack/lib/Entrypoint');
 const log = weblog({name: PLUGIN_NAME});
 
 const flatten = arr => arr.reduce((prev, curr) => prev.concat(curr), []);
@@ -45,6 +44,29 @@ const doesChunkBelongToHTML = (chunk, roots, visitedChunks) => {
 
   for (const parent of chunk.parents) {
     if (doesChunkBelongToHTML(parent, roots, visitedChunks)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const doesChunkGroupBelongToHTML = (chunkGroup, rootChunkGroups, visitedChunks) => {
+  // Prevent circular recursion.
+  // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
+  if (visitedChunks[chunkGroup.groupDebugId]) {
+    return false;
+  }
+  visitedChunks[chunkGroup.groupDebugId] = true;
+
+  for (const rootChunkGroup of rootChunkGroups) {
+    if (rootChunkGroup.groupDebugId === chunkGroup.groupDebugId) {
+      return true;
+    }
+  }
+
+  for (const parentChunkGroup of chunkGroup.getParents()) {
+    if (doesChunkGroupBelongToHTML(parentChunkGroup, rootChunkGroups, visitedChunks)) {
       return true;
     }
   }
@@ -122,27 +144,23 @@ class PreloadPlugin {
 
         // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
         // allow `allAssets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
-        // if (options.include !== 'allAssets') {
-        //   extractedChunks = extractedChunks.filter(chunk => {
-        //     const rootChunksHashs = Object.values(htmlPluginData.assets.chunks).map(({hash}) => hash);
-        //     const rootChunkGroups = compilation.chunkGroups.reduce((groups, chunkGroup) => {
-        //       const isRootChunkGroup = chunkGroup.chunks.reduce((flag, chunk) => {
-        //         return flag ||
-        //           rootChunksHashs.indexOf(chunk.renderedHash) > -1;
-        //       }, false);
-        //       if (isRootChunkGroup) groups.push(chunkGroup);
-        //       return groups;
-        //     }, []);
-        //     return rootChunkGroups.reduce((flag, chunkGroup) => {
-        //       return flag ||
-        //         chunk.isInGroup(chunkGroup);
-        //     }, false);
-        //     // console.log(Object.values(htmlPluginData.assets.chunks));
-        //     // console.warn(compilation.chunkGroups);
-        //     // doesChunkBelongToHTML(
-        //     //   chunk, Object.values(htmlPluginData.assets.chunks), {});
-        //   });
-        // }
+        if (options.include !== 'allAssets') {
+          extractedChunks = extractedChunks.filter(chunk => {
+            const rootChunksHashs = Object.values(htmlPluginData.assets.chunks).map(({hash}) => hash);
+            const rootChunkGroups = compilation.chunkGroups.reduce((groups, chunkGroup) => {
+              const isRootChunkGroup = chunkGroup.chunks.reduce((flag, chunk) => {
+                return flag ||
+                  rootChunksHashs.indexOf(chunk.renderedHash) > -1;
+              }, false);
+              if (isRootChunkGroup) groups.push(chunkGroup);
+              return groups;
+            }, []);
+            return Array.from(chunk.groupsIterable).reduce((flag, chunkGroup) => {
+              return flag ||
+                doesChunkGroupBelongToHTML(chunkGroup, rootChunkGroups, {});
+            }, false);
+          });
+        }
 
         flatten(extractedChunks.map(chunk => chunk.files))
           .filter(entry => {
