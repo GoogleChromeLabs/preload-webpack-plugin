@@ -21,7 +21,7 @@ const path = require('path');
 const webpack = require('webpack');
 const {JSDOM} = require('jsdom');
 
-const PreloadPlugin = require('../');
+const PreloadPlugin = require('../src/index');
 
 const OUTPUT_DIR = path.join(__dirname, 'dist');
 

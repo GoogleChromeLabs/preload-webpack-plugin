@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-// This isn't currently transpiled by babel, so manually bring it in.
-const flatMap = require('array.prototype.flatmap');
-const path = require('path');
-const {URL} = require('url');
-
 const createHTMLElementString = require('./lib/create-html-element-string');
 const defaultOptions = require('./lib/default-options');
+const determineAsValue = require('./lib/determine-as-value');
 const doesChunkBelongToHTML = require('./lib/does-chunk-belong-to-html');
+const extractChunks = require('./lib/extract-chunks');
+const insertLinksIntoHead = require('./lib/insert-links-into-head');
 
 class PreloadPlugin {
   constructor(options) {
@@ -34,47 +32,22 @@ class PreloadPlugin {
 
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-        const links = [];
-
-        let extractedChunks = [];
-        // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
-        // part of code-splitting with import() or require.ensure(). By default, asyncChunks
-        // get wired up using link rel=preload when using this plugin. This behaviour can be
-        // configured to preload all types of chunks or just prefetch chunks as needed.
-        if (options.include === undefined || options.include === 'asyncChunks') {
-          try {
-            extractedChunks = compilation.chunks.filter(chunk => !chunk.isInitial());
-          } catch (e) {
-            extractedChunks = compilation.chunks;
-          }
-        } else if (options.include === 'initial') {
-          try {
-            extractedChunks = compilation.chunks.filter(chunk => chunk.isInitial());
-          } catch (e) {
-            extractedChunks = compilation.chunks;
-          }
-        } else if (options.include === 'all') {
-          // Async chunks, vendor chunks, normal chunks.
-          extractedChunks = compilation.chunks;
-        } else if (Array.isArray(options.include)) {
-          // Keep only user specified chunks
-          extractedChunks = compilation.chunks.filter((chunk) => {
-            return chunk.name && options.include.includes(chunk.name);
-          });
-        } else {
-          throw new Error(`The 'include' option isn't set to a recognized value: ${options.include}`);
-        }
+        const extractedChunks = extractChunks(compilation, options.include);
 
         const publicPath = compilation.outputOptions.publicPath || '';
 
-        // Only handle the chunk import by the htmlWebpackPlugin
-        extractedChunks = extractedChunks
-          .filter((chunk) => doesChunkBelongToHTML(chunk, Object.values(htmlPluginData.assets.chunks), {}));
+        // Only handle chunks imported by this HtmlWebpackPlugin.
+        const htmlChunks = extractedChunks.filter(
+          (chunk) => doesChunkBelongToHTML(chunk, Object.values(htmlPluginData.assets.chunks), {}));
 
-        const uniqueFiles = new Set(flatMap(extractedChunks, chunk => chunk.files));
+        const allFiles = htmlChunks.reduce((accumulated, chunk) => {
+          return accumulated.concat(chunk.files);
+        }, []);
+        const uniqueFiles = new Set(allFiles);
         const filteredFiles = [...uniqueFiles].filter(
           (file) => this.options.fileBlacklist.every(regex => !regex.test(file)));
 
+        const links = [];
         for (const file of filteredFiles) {
           const href = `${publicPath}${file}`;
 
@@ -83,40 +56,14 @@ class PreloadPlugin {
             rel: options.rel,
           };
 
+          // If we're preloading this resource (as opposed to prefetching),
+          // then we need to set the 'as' attribute correctly.
           if (options.rel === 'preload') {
-            switch (typeof options.as) {
-              case 'string': {
-                attributes.as = options.as;
-                break;
-              }
+            attributes.as = determineAsValue(options.as, href);
 
-              case 'function': {
-                attributes.as = options.as(href);
-                break;
-              }
-
-              case 'undefined': {
-                // If `as` value is not provided in option, dynamically determine the correct
-                // value based on the suffix of filename.
-                // We only care about the pathname, so just use any domain.
-                const url = new URL(href, 'https://example.com');
-                const extension = path.extname(url.pathname);
-
-                if (extension === '.css') {
-                  attributes.as = 'style';
-                } else if (extension === '.woff2') {
-                  attributes.as = 'font';
-                } else {
-                  attributes.as = 'script';
-                }
-
-                break;
-              }
-
-              default:
-                throw new Error(`The 'as' option isn't set to a recognized value: ${options.as}`);
-            }
-
+            // On the off chance that we have a cross-origin 'href' attribute,
+            // set crossOrigin on the <link> to trigger CORS mode. Non-CORS
+            // fonts can't be used.
             if (attributes.as === 'font') {
               attributes.crossOrigin = '';
             }
@@ -126,13 +73,7 @@ class PreloadPlugin {
           links.push(linkElementString);
         }
 
-        if (htmlPluginData.html.indexOf('</head>') !== -1) {
-          // If a valid closing </head> is found, update it to include preload/prefetch tags
-          htmlPluginData.html = htmlPluginData.html.replace('</head>', links.join('\n') + '\n</head>');
-        } else {
-          // Otherwise assume at least a <body> is present and update it to include a new <head>
-          htmlPluginData.html = htmlPluginData.html.replace('<body>', '<head>' + links.join('\n') + '\n</head><body>');
-        }
+        htmlPluginData.html = insertLinksIntoHead(htmlPluginData.html, links);
 
         callback(null, htmlPluginData);
       });
