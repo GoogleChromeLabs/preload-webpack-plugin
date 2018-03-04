@@ -66,7 +66,7 @@ class PreloadPlugin {
             // set crossOrigin on the <link> to trigger CORS mode. Non-CORS
             // fonts can't be used.
             if (attributes.as === 'font') {
-              attributes.crossOrigin = '';
+              attributes.crossorigin = '';
             }
           }
 

@@ -157,7 +157,7 @@ describe('When passed non-async chunks, it', function() {
       expect(links.length).toBe(2);
       expect(links[0].getAttribute('rel')).toBe('preload');
       expect(links[0].getAttribute('as')).toBe('script');
-      expect(links[0].getAttribute('href')).toMatch(new RegExp('^/bundle\\.js$'));
+      expect(links[0].getAttribute('href')).toBe('/bundle.js');
       expect(links[1].getAttribute('rel')).toBe('preload');
       expect(links[1].getAttribute('as')).toBe('script');
       expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
@@ -196,7 +196,7 @@ describe('When passed non-async chunks, it', function() {
       expect(links.length).toBe(2);
       expect(links[0].getAttribute('rel')).toBe('preload');
       expect(links[0].getAttribute('as')).toBe('script');
-      expect(links[0].getAttribute('href')).toMatch(new RegExp('^/bundle\\.js$'));
+      expect(links[0].getAttribute('href')).toBe('/bundle.js');
       expect(links[1].getAttribute('rel')).toBe('preload');
       expect(links[1].getAttribute('as')).toBe('style');
       expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
@@ -235,7 +235,7 @@ describe('When passed non-async chunks, it', function() {
       expect(links.length).toBe(2);
       expect(links[0].getAttribute('rel')).toBe('preload');
       expect(links[0].getAttribute('as')).toBe('testing');
-      expect(links[0].getAttribute('href')).toMatch(new RegExp('^/bundle\\.js$'));
+      expect(links[0].getAttribute('href')).toBe('/bundle.js');
       expect(links[1].getAttribute('rel')).toBe('preload');
       expect(links[1].getAttribute('as')).toBe('testing');
       expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
@@ -244,70 +244,86 @@ describe('When passed non-async chunks, it', function() {
     });
     compiler.outputFileSystem = new MemoryFileSystem();
   });
+
+  it('should set as="font" and crossOrigin for .woff2 assets', (done) => {
+    const compiler = webpack({
+      entry: {
+        js: path.join(__dirname, 'fixtures', 'file.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].woff2',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          include: 'all'
+        })
+      ]
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(result.compilation.errors.length).toBe(0);
+
+      const html = result.compilation.assets['index.html'].source();
+      const dom = new JSDOM(html);
+
+      const links = dom.window.document.head.querySelectorAll('link');
+      expect(links.length).toBe(2);
+      expect(links[0].getAttribute('rel')).toBe('preload');
+      expect(links[0].getAttribute('as')).toBe('script');
+      expect(links[0].getAttribute('href')).toBe('/bundle.js');
+      expect(links[1].getAttribute('rel')).toBe('preload');
+      expect(links[1].getAttribute('as')).toBe('font');
+      expect(links[1].hasAttribute('crossorigin')).toBeTruthy();
+      expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
+
+  it('should allow setting the as value via a callback', (done) => {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        chunkFilename: 'chunk.[chunkhash].css',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new PreloadPlugin({
+          rel: 'preload',
+          as: (href) => href.startsWith('/chunk') ? 'test2' : 'test1',
+          include: 'all',
+        }),
+      ],
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(result.compilation.errors.length).toBe(0);
+
+      const html = result.compilation.assets['index.html'].source();
+      const dom = new JSDOM(html);
+
+      const links = dom.window.document.head.querySelectorAll('link');
+      expect(links.length).toBe(2);
+      expect(links[0].getAttribute('rel')).toBe('preload');
+      expect(links[0].getAttribute('as')).toBe('test1');
+      expect(links[0].getAttribute('href')).toBe('/bundle.js');
+      expect(links[1].getAttribute('rel')).toBe('preload');
+      expect(links[1].getAttribute('as')).toBe('test2');
+      expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
 });
 
-//
-//   it('adds preload using "font" for fonts and add crossorigin attribute', (done) => {
-//     const compiler = webpack({
-//       entry: {
-//         js: path.join(__dirname, 'fixtures', 'file.js')
-//       },
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: 'chunk.[chunkhash].woff2',
-//         publicPath: '/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin({
-//           rel: 'preload',
-//           include: 'all'
-//         })
-//       ]
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="font" crossorigin="crossorigin" href="/chunk');
-//       expect(html).toContain('<link rel="preload" as="script" href="/bundle.js"');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
-//
-//   it('use custom as attribute based on return value of callback', (done) => {
-//     const compiler = webpack({
-//       entry: path.join(__dirname, 'fixtures', 'file.js'),
-//       output: {
-//         path: OUTPUT_DIR,
-//         filename: 'bundle.js',
-//         chunkFilename: 'chunk.[chunkhash].css',
-//         publicPath: '/',
-//       },
-//       plugins: [
-//         new HtmlWebpackPlugin(),
-//         new PreloadPlugin({
-//           rel: 'preload',
-//           as(entry) {
-//             if (entry.indexOf('/chunk') === 0) return 'style';
-//             return 'script';
-//           },
-//           include: 'all',
-//         }),
-//       ],
-//     }, function(err, result) {
-//       expect(err).toBeFalsy();
-//       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
-//       const html = result.compilation.assets['index.html'].source();
-//       expect(html).toContain('<link rel="preload" as="style" href="/chunk');
-//       expect(html).toContain('<link rel="preload" as="script" href="/bundle.js"');
-//       done();
-//     });
-//     compiler.outputFileSystem = new MemoryFileSystem();
-//   });
-// });
-//
 // describe('PreloadPlugin prefetches normal chunks', function() {
 //   it('adds prefetch tags', function(done) {
 //     const compiler = webpack({
