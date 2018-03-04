@@ -46,9 +46,10 @@ class PreloadPlugin {
         const uniqueFiles = new Set(allFiles);
         const filteredFiles = [...uniqueFiles].filter(
           (file) => this.options.fileBlacklist.every(regex => !regex.test(file)));
+        const sortedFilteredFiles = filteredFiles.sort();
 
         const links = [];
-        for (const file of filteredFiles) {
+        for (const file of sortedFilteredFiles) {
           const href = `${publicPath}${file}`;
 
           const attributes = {

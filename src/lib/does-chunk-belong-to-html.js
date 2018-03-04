@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-function doesChunkBelongToHTML (chunk, roots, visitedChunks) {
+function doesChunkBelongToHTML(chunk, roots, visitedChunks) {
   // Prevent circular recursion.
   // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
   if (visitedChunks[chunk.renderedHash]) {
