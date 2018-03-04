@@ -34,7 +34,7 @@
     "css-loader": "^0.28.10",
     "eslint": "^4.18.2",
     "eslint-config-google": "^0.9.1",
-    "extract-text-webpack-plugin": "^3.0.2",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.0.4",
     "jasmin": "0.0.2",
