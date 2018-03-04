@@ -25,7 +25,7 @@
   },
   "scripts": {
     "lint": "eslint --format=codeframe .",
-    "test": "jasmine test/spec.js",
+    "test": "npm run build && jasmine test/spec.js",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src"
   },
@@ -34,14 +34,15 @@
     "build"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.38",
-    "@babel/core": "^7.0.0-beta.38",
-    "@babel/plugin-transform-runtime": "^7.0.0-beta.38",
-    "@babel/preset-env": "^7.0.0-beta.38",
-    "eslint": "^3.14.1",
-    "eslint-config-google": "^0.7.1",
-    "html-webpack-plugin": "^2.26.0",
-    "jasmine": "^2.5.3",
+    "@babel/cli": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-transform-runtime": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "eslint": "^4.18.1",
+    "eslint-config-google": "^0.9.1",
+    "html-webpack-plugin": "^3.0.4",
+    "jasmine": "^3.1.0",
+    "jsdom": "^11.6.2",
     "rimraf": "^2.6.2",
     "webpack": "^3.2.0"
   },
@@ -49,6 +50,7 @@
     "webpack": "^3.2.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.38"
+    "@babel/runtime": "^7.0.0-beta.40",
+    "array.prototype.flatmap": "^1.2.1"
   }
 }
