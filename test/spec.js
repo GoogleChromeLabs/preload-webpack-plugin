@@ -285,7 +285,7 @@ describe('When passed non-async chunks, it', function() {
     compiler.outputFileSystem = new MemoryFileSystem();
   });
 
-  it('should allow setting the as value via a callback', (done) => {
+  it('should allow setting the as value via a callback', function(done) {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),
       output: {
@@ -360,8 +360,8 @@ describe('When passed normal chunks, it', function() {
   });
 });
 
-describe(`When using 'include', it`, function () {
-  it('should filter based on chunkname', function (done) {
+describe(`When using 'include', it`, function() {
+  it('should filter based on chunkname', function(done) {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),
       output: {
