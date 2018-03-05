@@ -29,7 +29,11 @@ function doesChunkBelongToHTML(chunk, roots, visitedChunks) {
     }
   }
 
-  for (const parent of chunk.parents) {
+  const parents = ('_groups' in chunk) ?
+    chunk.getParents() :
+    chunk.parents;
+
+  for (const parent of parents) {
     if (doesChunkBelongToHTML(parent, roots, visitedChunks)) {
       return true;
     }
