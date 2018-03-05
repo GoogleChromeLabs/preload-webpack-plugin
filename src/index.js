@@ -27,58 +27,84 @@ class PreloadPlugin {
     this.options = Object.assign({}, defaultOptions, options);
   }
 
-  apply(compiler) {
+  addLinks(compilation, htmlPluginData) {
     const options = this.options;
 
-    compiler.plugin('compilation', (compilation) => {
-      compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-        const extractedChunks = extractChunks(compilation, options.include);
+    const extractedChunks = extractChunks(compilation, options.include);
 
-        const publicPath = compilation.outputOptions.publicPath || '';
+    const publicPath = compilation.outputOptions.publicPath || '';
 
-        // Only handle chunks imported by this HtmlWebpackPlugin.
-        const htmlChunks = extractedChunks.filter(
-          (chunk) => doesChunkBelongToHTML(chunk, Object.values(htmlPluginData.assets.chunks), {}));
+    // Only handle chunks imported by this HtmlWebpackPlugin.
+    const htmlChunks = extractedChunks.filter(
+      (chunk) => doesChunkBelongToHTML(chunk, Object.values(htmlPluginData.assets.chunks), {}));
 
-        const allFiles = htmlChunks.reduce((accumulated, chunk) => {
-          return accumulated.concat(chunk.files);
-        }, []);
-        const uniqueFiles = new Set(allFiles);
-        const filteredFiles = [...uniqueFiles].filter(
-          (file) => this.options.fileBlacklist.every(regex => !regex.test(file)));
-        const sortedFilteredFiles = filteredFiles.sort();
+    const allFiles = htmlChunks.reduce((accumulated, chunk) => {
+      return accumulated.concat(chunk.files);
+    }, []);
+    const uniqueFiles = new Set(allFiles);
+    const filteredFiles = [...uniqueFiles].filter(
+      (file) => this.options.fileBlacklist.every(regex => !regex.test(file)));
+    const sortedFilteredFiles = filteredFiles.sort();
 
-        const links = [];
-        for (const file of sortedFilteredFiles) {
-          const href = `${publicPath}${file}`;
+    const links = [];
+    for (const file of sortedFilteredFiles) {
+      const href = `${publicPath}${file}`;
 
-          const attributes = {
-            href,
-            rel: options.rel,
-          };
+      const attributes = {
+        href,
+        rel: options.rel,
+      };
 
-          // If we're preloading this resource (as opposed to prefetching),
-          // then we need to set the 'as' attribute correctly.
-          if (options.rel === 'preload') {
-            attributes.as = determineAsValue(options.as, href);
+      // If we're preloading this resource (as opposed to prefetching),
+      // then we need to set the 'as' attribute correctly.
+      if (options.rel === 'preload') {
+        attributes.as = determineAsValue(options.as, href);
 
-            // On the off chance that we have a cross-origin 'href' attribute,
-            // set crossOrigin on the <link> to trigger CORS mode. Non-CORS
-            // fonts can't be used.
-            if (attributes.as === 'font') {
-              attributes.crossorigin = '';
-            }
-          }
-
-          const linkElementString = createHTMLElementString('link', attributes);
-          links.push(linkElementString);
+        // On the off chance that we have a cross-origin 'href' attribute,
+        // set crossOrigin on the <link> to trigger CORS mode. Non-CORS
+        // fonts can't be used.
+        if (attributes.as === 'font') {
+          attributes.crossorigin = '';
         }
+      }
 
-        htmlPluginData.html = insertLinksIntoHead(htmlPluginData.html, links);
+      const linkElementString = createHTMLElementString('link', attributes);
+      links.push(linkElementString);
+    }
 
-        callback(null, htmlPluginData);
+    htmlPluginData.html = insertLinksIntoHead(htmlPluginData.html, links);
+
+    return htmlPluginData;
+  }
+
+  apply(compiler) {
+    if ('hooks' in compiler) {
+      compiler.hooks.compilation.tap(
+        this.constructor.name,
+        compilation => {
+          compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+            this.constructor.name,
+            (htmlPluginData, callback) => {
+              try {
+                callback(null, this.addLinks(compilation, htmlPluginData));
+              } catch (error) {
+                callback(error);
+              }
+            }
+          );
+        }
+      );
+    } else {
+      compiler.plugin('compilation', (compilation) => {
+        compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
+          try {
+            callback(null, this.addLinks(compilation, htmlPluginData));
+          } catch (error) {
+            callback(error);
+          }
+        });
       });
-    });
+    }
   }
 }
 
