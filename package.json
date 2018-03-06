@@ -43,7 +43,6 @@
     "html-webpack-plugin": "^3.0.4",
     "jasmine": "^3.1.0",
     "jsdom": "^11.6.2",
-    "npm-install-version": "^6.0.2",
     "rimraf": "^2.6.2",
     "webpack": "^3.11.0"
   },
