@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint --quiet -f codeframe index.js test/spec.js",
     "lint-fix": "eslint --fix --quiet -f codeframe index.js test/spec.js",
+    "webpack-v3-t": "node_modules/jasmine/bin/jasmine.js test/webpack-v3.spec.js",
     "test": "node_modules/jasmine/bin/jasmine.js test/spec.js"
   },
   "files": [
@@ -36,7 +37,7 @@
     "eslint-config-google": "^0.9.1",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.0.4",
+    "html-webpack-plugin": "^3.0.6",
     "jasmine": "^3.1.0",
     "webpack": "^4.1.0"
   },
