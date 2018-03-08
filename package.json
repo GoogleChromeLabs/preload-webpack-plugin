@@ -7,7 +7,7 @@
     "lint": "eslint --quiet -f codeframe index.js test/spec.js",
     "lint-fix": "eslint --fix --quiet -f codeframe index.js test/spec.js",
     "webpack-v3-t": "node_modules/jasmine/bin/jasmine.js test/webpack-v3.spec.js",
-    "test": "node_modules/jasmine/bin/jasmine.js test/spec.js"
+    "test": "node_modules/jasmine/bin/jasmine.js test/spec.js && npm run webpack-v3-t"
   },
   "files": [
     "index.js"
