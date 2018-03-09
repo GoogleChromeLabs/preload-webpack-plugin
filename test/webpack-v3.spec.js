@@ -19,11 +19,11 @@
 
 const path = require('path');
 const MemoryFileSystem = require('memory-fs');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('./webpack-v3/node_modules/webpack');
+const HtmlWebpackPlugin = require('./webpack-v3/node_modules/html-webpack-plugin');
 const PreloadPlugin = require('../');
 const OUTPUT_DIR = path.join(__dirname, 'dist');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require('./webpack-v3/node_modules/extract-text-webpack-plugin');
 
 describe('PreloadPlugin preloads or prefetches async chunks', function() {
   it('adds preload tags to async chunks', function(done) {
@@ -271,9 +271,7 @@ describe('PreloadPlugin prefetches normal chunks', function() {
       expect(err).toBeFalsy();
       expect(JSON.stringify(result.compilation.errors)).toBe('[]');
       const html = result.compilation.assets['index.html'].source();
-      // webpack change require's name logic
-      // expect(html).toContain('<link rel="prefetch" href="0');
-      expect(html).toContain('<link rel="prefetch" href="home');
+      expect(html).toContain('<link rel="prefetch" href="0');
       expect(html).toContain('<link rel="prefetch" href="main.js"');
       done();
     });
@@ -309,7 +307,6 @@ describe('PreloadPlugin filters chunks', function() {
     });
     compiler.outputFileSystem = new MemoryFileSystem();
   });
-
   it('based on chunkname with sourcemap', function(done) {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),
@@ -341,7 +338,6 @@ describe('PreloadPlugin filters chunks', function() {
     });
     compiler.outputFileSystem = new MemoryFileSystem();
   });
-
   it('use fileWhitelist to include only specific files', (done) => {
     const compiler = webpack({
       entry: path.join(__dirname, 'fixtures', 'file.js'),
