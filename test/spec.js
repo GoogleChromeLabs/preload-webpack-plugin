@@ -357,7 +357,10 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
         expect(links.length).toBe(2);
         expect(links[0].getAttribute('rel')).toBe('prefetch');
         expect(links[0].hasAttribute('as')).toBeFalsy();
-        expect(links[0].getAttribute('href')).toContain('0.js');
+        // There's a difference in the output when run in webpack v3 and v4.
+        //   v3 has compilation.chunks[0].files: ['0.js']
+        //   v4 has compilation.chunks[0].files: ['home.js']
+        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'));
         expect(links[1].getAttribute('rel')).toBe('prefetch');
         expect(links[1].hasAttribute('as')).toBeFalsy();
         expect(links[1].getAttribute('href')).toBe('main.js');
