@@ -78,7 +78,10 @@ class PreloadPlugin {
       // If we're preloading this resource (as opposed to prefetching),
       // then we need to set the 'as' attribute correctly.
       if (options.rel === 'preload') {
-        attributes.as = determineAsValue(options.as, href);
+        attributes.as = determineAsValue({
+          href,
+          optionsAs: options.as,
+        });
 
         // On the off chance that we have a cross-origin 'href' attribute,
         // set crossOrigin on the <link> to trigger CORS mode. Non-CORS
@@ -88,11 +91,17 @@ class PreloadPlugin {
         }
       }
 
-      const linkElementString = createHTMLElementString('link', attributes);
+      const linkElementString = createHTMLElementString({
+        attributes,
+        elementName: 'link',
+      });
       links.push(linkElementString);
     }
 
-    htmlPluginData.html = insertLinksIntoHead(htmlPluginData.html, links);
+    htmlPluginData.html = insertLinksIntoHead({
+      links,
+      html: htmlPluginData.html,
+    });
 
     return htmlPluginData;
   }

@@ -17,7 +17,7 @@
 
 const assert = require('assert');
 
-function createHTMLElementString(elementName, attributes={}, closingTagRequired=false) {
+function createHTMLElementString({elementName, attributes={}, closingTagRequired=false}) {
   assert(elementName, 'Please provide an element name.');
   assert(!(/\W/.test(elementName)), 'The element name contains invalid characters.');
 

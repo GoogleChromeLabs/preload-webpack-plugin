@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-function insertLinksIntoHead(html, links) {
+function insertLinksIntoHead({html, links=[]}) {
   if (links.length === 0) {
     return html;
   }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-function v3({chunk, htmlAssetsChunks, visitedChunks = {}}) {
+function v3({chunk, htmlAssetsChunks, visitedChunks={}}) {
   // Prevent circular recursion.
   // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
   if (visitedChunks[chunk.renderedHash]) {
