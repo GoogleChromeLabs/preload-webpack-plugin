@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-function doesChunkBelongToHTML(chunk, roots, visitedChunks) {
+function v3({chunk, htmlAssetsChunks, visitedChunks = {}}) {
   // Prevent circular recursion.
   // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/49
   if (visitedChunks[chunk.renderedHash]) {
@@ -23,18 +23,14 @@ function doesChunkBelongToHTML(chunk, roots, visitedChunks) {
   }
   visitedChunks[chunk.renderedHash] = true;
 
-  for (const root of roots) {
-    if (root.hash === chunk.renderedHash) {
+  for (const htmlAssetChunk of htmlAssetsChunks) {
+    if (htmlAssetChunk.hash === chunk.renderedHash) {
       return true;
     }
   }
 
-  const parents = ('_groups' in chunk) ?
-    chunk.getParents() :
-    chunk.parents;
-
-  for (const parent of parents) {
-    if (doesChunkBelongToHTML(parent, roots, visitedChunks)) {
+  for (const parent of chunk.parents) {
+    if (v3({chunk: parent, htmlAssetsChunks, visitedChunks})) {
       return true;
     }
   }
@@ -42,4 +38,18 @@ function doesChunkBelongToHTML(chunk, roots, visitedChunks) {
   return false;
 }
 
-module.exports = doesChunkBelongToHTML;
+function v4({chunk, htmlAssetsChunks, compilation}) {
+  // Get all the hashes of the HTML assets.
+  const rootHashes = Object.values(htmlAssetsChunks).map(({hash}) => hash);
+  // Get a list of chunk groups that contain one of those hashes.
+  const rootChunkGroups = compilation.chunkGroups.filter((chunkGroup) => {
+    return chunkGroup.chunks.filter((chunk) => rootHashes.includes(chunk.renderedHash));
+  });
+  // Get an id for each of those chunk groups.
+  const rootChunkGroupsIds = new Set(rootChunkGroups.map(({id}) => id));
+  // Return true iff the chunk we're passed belongs to a group whose id is in
+  // the list of root chunk groups.
+  return Array.from(chunk.groupsIterable).some(({id}) => rootChunkGroupsIds.has(id));
+}
+
+module.exports = {v3, v4};

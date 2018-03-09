@@ -15,18 +15,30 @@
  * limitations under the License.
  */
 
-function extractChunks(compilation, optionsInclude) {
+function extractChunks({compilation, optionsInclude}) {
   try {
     // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
     // part of code-splitting with import() or require.ensure(). By default, asyncChunks
     // get wired up using link rel=preload when using this plugin. This behaviour can be
     // configured to preload all types of chunks or just prefetch chunks as needed.
     if (optionsInclude === undefined || optionsInclude === 'asyncChunks') {
-      return compilation.chunks.filter(chunk => !chunk.isInitial());
+      return compilation.chunks.filter(chunk => {
+        if ('canBeInitial' in chunk) {
+          return !chunk.canBeInitial();
+        } else {
+          return !chunk.isInitial();
+        }
+      });
     }
 
     if (optionsInclude === 'initial') {
-      return compilation.chunks.filter(chunk => chunk.isInitial());
+      return compilation.chunks.filter(chunk => {
+        if ('canBeInitial' in chunk) {
+          return chunk.canBeInitial();
+        } else {
+          return chunk.isInitial();
+        }
+      });
     }
 
     if (optionsInclude === 'all') {
@@ -36,9 +48,7 @@ function extractChunks(compilation, optionsInclude) {
 
     if (Array.isArray(optionsInclude)) {
       // Keep only user specified chunks.
-      return compilation.chunks.filter((chunk) => {
-        return chunk.name && optionsInclude.includes(chunk.name);
-      });
+      return compilation.chunks.filter((chunk) => chunk.name && optionsInclude.includes(chunk.name));
     }
   } catch (error) {
     return compilation.chunks;

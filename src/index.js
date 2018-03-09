@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+const assert = require('assert');
+
 const createHTMLElementString = require('./lib/create-html-element-string');
 const defaultOptions = require('./lib/default-options');
 const determineAsValue = require('./lib/determine-as-value');
@@ -27,26 +29,44 @@ class PreloadPlugin {
     this.options = Object.assign({}, defaultOptions, options);
   }
 
-  addLinks(compilation, htmlPluginData) {
+  addLinks(webpackVersion, compilation, htmlPluginData) {
+    assert(webpackVersion in doesChunkBelongToHTML,
+      `An invalid webpackVersion was supplied. Supported values: ${Object.keys(doesChunkBelongToHTML)}.`);
+
     const options = this.options;
 
-    const extractedChunks = extractChunks(compilation, options.include);
+    // Bail out early if we're configured to exclude this HTML file.
+    if (options.excludeHtmlNames.includes(htmlPluginData.plugin.options.filename)) {
+      return htmlPluginData;
+    }
 
-    const publicPath = compilation.outputOptions.publicPath || '';
+    const extractedChunks = extractChunks({
+      compilation,
+      optionsInclude: options.include,
+    });
 
-    // Only handle chunks imported by this HtmlWebpackPlugin.
-    const htmlChunks = extractedChunks.filter(
-      (chunk) => doesChunkBelongToHTML(chunk, Object.values(htmlPluginData.assets.chunks), {}));
+    const htmlChunks = options.include === 'allAssets' ?
+      // Handle all chunks.
+      extractedChunks :
+      // Only handle chunks imported by this HtmlWebpackPlugin.
+      extractedChunks.filter((chunk) => doesChunkBelongToHTML[webpackVersion]({
+        chunk,
+        compilation,
+        htmlAssetsChunks: Object.values(htmlPluginData.assets.chunks),
+      }));
 
+    // Flatten the list of files.
     const allFiles = htmlChunks.reduce((accumulated, chunk) => {
       return accumulated.concat(chunk.files);
     }, []);
     const uniqueFiles = new Set(allFiles);
     const filteredFiles = [...uniqueFiles].filter(
       (file) => this.options.fileBlacklist.every(regex => !regex.test(file)));
+    // Sort to ensure the output is predictable.
     const sortedFilteredFiles = filteredFiles.sort();
 
     const links = [];
+    const publicPath = compilation.outputOptions.publicPath || '';
     for (const file of sortedFilteredFiles) {
       const href = `${publicPath}${file}`;
 
@@ -86,7 +106,7 @@ class PreloadPlugin {
             this.constructor.name,
             (htmlPluginData, callback) => {
               try {
-                callback(null, this.addLinks(compilation, htmlPluginData));
+                callback(null, this.addLinks('v4', compilation, htmlPluginData));
               } catch (error) {
                 callback(error);
               }
@@ -98,7 +118,7 @@ class PreloadPlugin {
       compiler.plugin('compilation', (compilation) => {
         compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
           try {
-            callback(null, this.addLinks(compilation, htmlPluginData));
+            callback(null, this.addLinks('v3', compilation, htmlPluginData));
           } catch (error) {
             callback(error);
           }

@@ -18,6 +18,7 @@
 const defaultOptions = {
   rel: 'preload',
   include: 'asyncChunks',
+  excludeHtmlNames: [],
   fileBlacklist: [/\.map/]
 };
 

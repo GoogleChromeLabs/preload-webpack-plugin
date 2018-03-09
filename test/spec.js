@@ -23,7 +23,7 @@ const PreloadPlugin = require('../src/index');
 
 const OUTPUT_DIR = path.join(__dirname, 'dist');
 
-module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
+module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
   describe(`${descriptionPrefix} When passed async chunks, it`, function() {
     it('should add preload tags', function(done) {
       const compiler = webpack({
@@ -41,8 +41,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           new PreloadPlugin()
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -77,8 +78,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -109,8 +111,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           new PreloadPlugin()
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -146,8 +149,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -185,8 +189,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -224,8 +229,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -263,8 +269,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -302,8 +309,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           }),
         ],
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -338,8 +346,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -348,7 +357,7 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
         expect(links.length).toBe(2);
         expect(links[0].getAttribute('rel')).toBe('prefetch');
         expect(links[0].hasAttribute('as')).toBeFalsy();
-        expect(links[0].getAttribute('href')).toBe('0.js');
+        expect(links[0].getAttribute('href')).toContain('0.js');
         expect(links[1].getAttribute('rel')).toBe('prefetch');
         expect(links[1].hasAttribute('as')).toBeFalsy();
         expect(links[1].getAttribute('href')).toBe('main.js');
@@ -378,8 +387,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -417,8 +427,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           })
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -456,8 +467,9 @@ module.exports = ({webpack, HtmlWebpackPlugin, descriptionPrefix}) => {
           new PreloadPlugin()
         ]
       }, function(err, result) {
-        expect(err).toBeFalsy();
-        expect(result.compilation.errors.length).toBe(0);
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
