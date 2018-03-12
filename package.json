@@ -29,7 +29,7 @@
     "coverage": "nyc npm run test",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src",
-    "publish": "npm run lint && npm run test && npm run build && npm publish",
+    "publish-stable": "npm run lint && npm run test && npm run build && npm publish",
     "publish-next": "npm run lint && npm run test && npm run build && npm publish --tag next"
   },
   "main": "build/index.js",
