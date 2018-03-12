@@ -25,7 +25,7 @@
   },
   "scripts": {
     "lint": "eslint --format=codeframe .",
-    "test": "jasmine test/webpack3/index.js test/webpack4/index.js",
+    "test": "jasmine test/unit/* test/webpack3/index.js test/webpack4/index.js",
     "coverage": "nyc npm run test",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src"
