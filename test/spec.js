@@ -450,6 +450,54 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       });
       compiler.outputFileSystem = new MemoryFileSystem();
     });
+
+    // TODO: Is this testing the right thing? We might need a test around, e.g.,
+    // using a different plugin that adds assets without also creating chunks.
+    it(`should pull in additional assets when set to 'allAssets'`, function(done) {
+      const compiler = webpack({
+        // Use "the" as the prefix for the entry names, to ensure that they're
+        // sorted after either 0.js or home.js (depending on the webpack version).
+        entry: {
+          theFirstEntry: path.join(__dirname, 'fixtures', 'file.js'),
+          theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js'),
+        },
+        output: {
+          path: OUTPUT_DIR,
+          filename: '[name].js',
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new PreloadPlugin({
+            include: 'allAssets',
+          }),
+        ]
+      }, function(err, result) {
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
+
+        const html = result.compilation.assets['index.html'].source();
+        const dom = new JSDOM(html);
+
+        const links = dom.window.document.head.querySelectorAll('link');
+        expect(links.length).toBe(3);
+        expect(links[0].getAttribute('rel')).toBe('preload');
+        expect(links[0].getAttribute('as')).toBe('script');
+        // There's a difference in the output when run in webpack v3 and v4.
+        //   v3 has compilation.chunks[0].files: ['0.js']
+        //   v4 has compilation.chunks[0].files: ['home.js']
+        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'));
+        expect(links[1].getAttribute('rel')).toBe('preload');
+        expect(links[1].getAttribute('as')).toBe('script');
+        expect(links[1].getAttribute('href')).toBe('theFirstEntry.js');
+        expect(links[2].getAttribute('rel')).toBe('preload');
+        expect(links[2].getAttribute('as')).toBe('script');
+        expect(links[2].getAttribute('href')).toBe('theSecondEntry.js');
+
+        done();
+      });
+      compiler.outputFileSystem = new MemoryFileSystem();
+    });
   });
 
   describe(`${descriptionPrefix} When using an empty config, it`, function() {
