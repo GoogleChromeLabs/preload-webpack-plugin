@@ -488,4 +488,86 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       compiler.outputFileSystem = new MemoryFileSystem();
     });
   });
+
+  describe(`${descriptionPrefix} When excludeHtmlNames is used,`, function() {
+    it(`should not modify the HTML of an asset that's listed`, function(done) {
+      const compiler = webpack({
+        entry: {
+          js: path.join(__dirname, 'fixtures', 'file.js')
+        },
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'bundle.js',
+          chunkFilename: '[name].[chunkhash].js',
+          publicPath: '/',
+        },
+        plugins: [
+          new HtmlWebpackPlugin({
+            filename: 'ignored.html',
+          }),
+          new PreloadPlugin({
+            excludeHtmlNames: ['ignored.html'],
+          })
+        ]
+      }, function(err, result) {
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
+
+        const html = result.compilation.assets['ignored.html'].source();
+        const dom = new JSDOM(html);
+
+        const links = dom.window.document.head.querySelectorAll('link');
+        expect(links.length).toBe(0);
+
+        done();
+      });
+      compiler.outputFileSystem = new MemoryFileSystem();
+    });
+
+    it(`should not modify the HTML of an asset that's listed, but modify the HTML of the asset that isn't listed`, function(done) {
+      const compiler = webpack({
+        entry: {
+          js: path.join(__dirname, 'fixtures', 'file.js')
+        },
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'bundle.js',
+          chunkFilename: '[name].[chunkhash].js',
+          publicPath: '/',
+        },
+        plugins: [
+          new HtmlWebpackPlugin({
+            filename: 'ignored.html',
+          }),
+          new HtmlWebpackPlugin(),
+          new PreloadPlugin({
+            excludeHtmlNames: ['ignored.html'],
+          })
+        ]
+      }, function(err, result) {
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
+
+        const ignoredHtml = result.compilation.assets['ignored.html'].source();
+        const ignoredDom = new JSDOM(ignoredHtml);
+
+        const ignoredLinks = ignoredDom.window.document.head.querySelectorAll('link');
+        expect(ignoredLinks.length).toBe(0);
+
+        const html = result.compilation.assets['index.html'].source();
+        const dom = new JSDOM(html);
+
+        const links = dom.window.document.head.querySelectorAll('link');
+        expect(links.length).toBe(1);
+        expect(links[0].getAttribute('rel')).toBe('preload');
+        expect(links[0].getAttribute('as')).toBe('script');
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'));
+
+        done();
+      });
+      compiler.outputFileSystem = new MemoryFileSystem();
+    });
+  });
 };
