@@ -145,7 +145,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           new PreloadPlugin({
             rel: 'preload',
             as: 'script',
-            include: 'all'
+            include: 'allChunks'
           })
         ]
       }, function(err, result) {
@@ -185,7 +185,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
             rel: 'preload',
-            include: 'all'
+            include: 'allChunks'
           })
         ]
       }, function(err, result) {
@@ -225,7 +225,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           new PreloadPlugin({
             rel: 'preload',
             as: 'testing',
-            include: 'all'
+            include: 'allChunks'
           })
         ]
       }, function(err, result) {
@@ -265,7 +265,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
             rel: 'preload',
-            include: 'all'
+            include: 'allChunks'
           })
         ]
       }, function(err, result) {
@@ -305,7 +305,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           new PreloadPlugin({
             rel: 'preload',
             as: (href) => href.startsWith('/chunk') ? 'test2' : 'test1',
-            include: 'all',
+            include: 'allChunks',
           }),
         ],
       }, function(err, result) {
@@ -342,7 +342,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
             rel: 'prefetch',
-            include: 'all'
+            include: 'allChunks'
           })
         ]
       }, function(err, result) {

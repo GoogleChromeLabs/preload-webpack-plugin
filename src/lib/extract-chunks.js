@@ -41,9 +41,15 @@ function extractChunks({compilation, optionsInclude}) {
       });
     }
 
-    if (optionsInclude === 'all') {
+    if (optionsInclude === 'allChunks') {
       // Async chunks, vendor chunks, normal chunks.
       return compilation.chunks;
+    }
+
+    if (optionsInclude === 'allAssets') {
+      // Every asset, regardless of which chunk it's in.
+      // Wrap it in a single, "psuedo-chunk" return value.
+      return [{files: Object.keys(compilation.assets)}];
     }
 
     if (Array.isArray(optionsInclude)) {
