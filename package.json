@@ -26,6 +26,7 @@
   "scripts": {
     "lint": "eslint --format=codeframe .",
     "test": "jasmine test/webpack3/index.js test/webpack4/index.js",
+    "coverage": "nyc npm run test",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src"
   },
@@ -43,6 +44,7 @@
     "jasmine": "^3.1.0",
     "jsdom": "^11.6.2",
     "memory-fs": "^0.4.1",
+    "nyc": "^11.4.1",
     "rimraf": "^2.6.2"
   },
   "peerDependencies": {

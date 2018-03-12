@@ -1,6 +1,7 @@
 # Directories
-node_modules/
+.nyc_output/
 build/
+node_modules/
 
 # Files
 npm-debug.log
