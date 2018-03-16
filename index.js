@@ -169,6 +169,18 @@ class PreloadPlugin {
         });
     }
 
+    if (Array.isArray(options.exclude)) {
+      // Exclude user specified chunks
+      extractedChunks = extractedChunks.filter(chunk => {
+        const chunkName = chunk.name;
+        // Only care about named chunks
+        if (!chunkName) {
+          return true;
+        }
+        return !options.exclude.includes(chunkName);
+      });
+    }
+
     // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
     // allow `allAssets` mode to skip, as assets are just files to be filtered by black/whitelist, not real chunks
     if (options.include !== 'allAssets') {
@@ -233,6 +245,18 @@ class PreloadPlugin {
           }
           return options.include.indexOf(chunkName) > -1;
         });
+    }
+
+    if (Array.isArray(options.exclude)) {
+      // Exclude user specified chunks
+      extractedChunks = extractedChunks.filter(chunk => {
+        const chunkName = chunk.name;
+        // Only care about named chunks
+        if (!chunkName) {
+          return true;
+        }
+        return !options.exclude.includes(chunkName);
+      });
     }
 
     // only handle the chunks associated to this htmlWebpackPlugin instance, in case of multiple html plugin outputs
