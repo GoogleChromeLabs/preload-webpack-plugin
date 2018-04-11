@@ -60,8 +60,17 @@ class PreloadPlugin {
       return accumulated.concat(chunk.files);
     }, []);
     const uniqueFiles = new Set(allFiles);
-    const filteredFiles = [...uniqueFiles].filter(
-      (file) => this.options.fileBlacklist.every(regex => !regex.test(file)));
+    const filteredFiles = [...uniqueFiles].filter(file => {
+      return (
+        !this.options.fileWhitelist ||
+        this.options.fileWhitelist.some(regex => regex.test(file))
+      );
+    }).filter(file => {
+      return (
+        !this.options.fileBlacklist ||
+        this.options.fileBlacklist.every(regex => !regex.test(file))
+      );
+    });
     // Sort to ensure the output is predictable.
     const sortedFilteredFiles = filteredFiles.sort();
 

@@ -498,6 +498,45 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       });
       compiler.outputFileSystem = new MemoryFileSystem();
     });
+
+    it(`should honor fileWhitelist and fileBlacklist, with the blacklist taking precedence`, function(done) {
+      const compiler = webpack({
+        // Use "the" as the prefix for the entry names, to ensure that they're
+        // sorted after either 0.js or home.js (depending on the webpack version).
+        entry: {
+          theFirstEntry: path.join(__dirname, 'fixtures', 'file.js'),
+          theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js'),
+        },
+        output: {
+          path: OUTPUT_DIR,
+          filename: '[name].js',
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new PreloadPlugin({
+            include: 'allAssets',
+            fileWhitelist: [/Entry/],
+            fileBlacklist: [/First/],
+          }),
+        ]
+      }, function(err, result) {
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
+
+        const html = result.compilation.assets['index.html'].source();
+        const dom = new JSDOM(html);
+
+        const links = dom.window.document.head.querySelectorAll('link');
+        expect(links.length).toBe(1);
+        expect(links[0].getAttribute('rel')).toBe('preload');
+        expect(links[0].getAttribute('as')).toBe('script');
+        expect(links[0].getAttribute('href')).toBe('theSecondEntry.js');
+
+        done();
+      });
+      compiler.outputFileSystem = new MemoryFileSystem();
+    });
   });
 
   describe(`${descriptionPrefix} When using an empty config, it`, function() {
