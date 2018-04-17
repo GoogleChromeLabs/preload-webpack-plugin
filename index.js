@@ -273,12 +273,12 @@ class PreloadPlugin {
             asValue = options.as;
           }
           const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
-          filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
+          filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">`;
         } else {
           // If preload isn't specified, the only other valid entry is prefetch here
           // You could specify preconnect but as we're dealing with direct paths to resources
           // instead of origins that would make less sense.
-          filesToInclude+= `<link rel="${options.rel}" href="${entry}">\n`;
+          filesToInclude+= `<link rel="${options.rel}" href="${entry}">`;
         }
       });
     if (htmlPluginData.html.indexOf('</head>') !== -1) {
