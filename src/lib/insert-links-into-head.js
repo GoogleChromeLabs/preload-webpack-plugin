@@ -22,12 +22,12 @@ function insertLinksIntoHead({html, links=[]}) {
 
   if (html.includes('</head>')) {
     // If a valid closing </head> is found, insert the new <link>s right before it.
-    return html.replace('</head>', links.join('\n') + '\n</head>');
+    return html.replace('</head>', links.join('') + '</head>');
   }
 
   if (html.includes('<body>')) {
     // If there's a <body> but no <head>, create a <head> containing the <head>.
-    return html.replace('<body>', `<head>\n${links.join('\n')}\n</head>\n<body>`);
+    return html.replace('<body>', `<head>${links.join('')}\n</head><body>`);
   }
 
   throw new Error(`The HTML provided did not contain a </head> or a <body>:\n\n${html}`);
