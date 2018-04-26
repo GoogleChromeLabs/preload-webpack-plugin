@@ -45,7 +45,7 @@ describe(`Normal Conditions:`, function() {
       links: ['<link>'],
     });
 
-    expect(updatedHtml).toEqual(`<html><head><link>\n</head><body></body></html>`);
+    expect(updatedHtml).toEqual(`<html><head><link></head><body></body></html>`);
 
     done();
   });
@@ -57,7 +57,7 @@ describe(`Normal Conditions:`, function() {
       links: ['<link1>', '<link2>'],
     });
 
-    expect(updatedHtml).toEqual(`<html><head><link1>\n<link2>\n</head><body></body></html>`);
+    expect(updatedHtml).toEqual(`<html><head><link1><link2></head><body></body></html>`);
 
     done();
   });
@@ -69,7 +69,7 @@ describe(`Normal Conditions:`, function() {
       links: ['<link1>'],
     });
 
-    expect(updatedHtml).toEqual(`<html><head>\n<link1>\n</head>\n<body></body></html>`);
+    expect(updatedHtml).toEqual(`<html><head><link1>\n</head><body></body></html>`);
 
     done();
   });
@@ -81,7 +81,7 @@ describe(`Normal Conditions:`, function() {
       links: ['<link1>', '<link2>'],
     });
 
-    expect(updatedHtml).toEqual(`<html><head>\n<link1>\n<link2>\n</head>\n<body></body></html>`);
+    expect(updatedHtml).toEqual(`<html><head><link1><link2>\n</head><body></body></html>`);
 
     done();
   });
