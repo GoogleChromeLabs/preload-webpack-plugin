@@ -15,12 +15,43 @@
  * limitations under the License.
  */
 
+const Entrypoint = require('webpack/lib/Entrypoint')
+
+function isAsync (chunk) {
+  if ('canBeInitial' in chunk) {
+    return !chunk.canBeInitial();
+  } else {
+    return !chunk.isInitial();
+  }
+}
+
+function getChunkEntryNames (chunk) {
+  return Array.from(new Set(getNames(chunk.groupsIterable)))
+}
+
+function getNames (groups) {
+  const names = []
+  for (const group of groups) {
+    if (group instanceof Entrypoint) {
+      // entrypoint
+      if (group.options.name) {
+        names.push(group.options.name)
+      }
+    } else {
+      names.push(...getNames(group.parentsIterable))
+    }
+  }
+  return names
+}
+
 function extractChunks({compilation, optionsInclude}) {
   let includeChunks;
   let includeType;
+  let includeEntryPoints;
   if (optionsInclude && typeof optionsInclude === 'object') {
     includeType = optionsInclude.type;
     includeChunks = optionsInclude.chunks;
+    includeEntryPoints = optionsInclude.entries;
   } else {
     if (Array.isArray(optionsInclude)) {
       includeChunks = optionsInclude;
@@ -37,28 +68,23 @@ function extractChunks({compilation, optionsInclude}) {
     });
   }
 
+  if (Array.isArray(includeEntryPoints)) {
+    chunks = chunks.filter(chunk => {
+      const names = getChunkEntryNames(chunk)
+      return names.some(name => includeEntryPoints.includes(name))
+    })
+  }
+
   // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
   // part of code-splitting with import() or require.ensure(). By default, asyncChunks
   // get wired up using link rel=preload when using this plugin. This behaviour can be
   // configured to preload all types of chunks or just prefetch chunks as needed.
   if (includeType === undefined || includeType === 'asyncChunks') {
-    return chunks.filter(chunk => {
-      if ('canBeInitial' in chunk) {
-        return !chunk.canBeInitial();
-      } else {
-        return !chunk.isInitial();
-      }
-    });
+    return chunks.filter(isAsync);
   }
 
   if (includeType === 'initial') {
-    return chunks.filter(chunk => {
-      if ('canBeInitial' in chunk) {
-        return chunk.canBeInitial();
-      } else {
-        return chunk.isInitial();
-      }
-    });
+    return chunks.filter(chunk => !isAsync(chunk));
   }
 
   if (includeType === 'allChunks') {
