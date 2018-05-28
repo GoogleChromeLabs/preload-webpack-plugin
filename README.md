@@ -1,3 +1,23 @@
+This is a fork of [preload-webpack-plugin](https://github.com/GoogleChromeLabs/preload-webpack-plugin) with a few additions for multi-entry-page webpack setups:
+
+- `include` option can be an object in the shape of `{ type?, chunks?, entries? }`. For example, to prefetch async chunks for a specific entry point:
+
+  ``` js
+  {
+    rel: 'prefetch',
+    include: {
+      type: 'asyncChunks',
+      entries: ['app']
+    }
+  }
+  ```
+
+- Added an `includeHtmlNames` option so that the plugin is only applied to a specific HTML file.
+
+- Drops support for Node < 6.
+
+---
+
 preload-webpack-plugin
 ============
 [![NPM version][npm-img]][npm-url]
