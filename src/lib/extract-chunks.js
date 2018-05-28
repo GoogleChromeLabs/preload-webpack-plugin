@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-const Entrypoint = require('webpack/lib/Entrypoint');
-
 function isAsync(chunk) {
   if ('canBeInitial' in chunk) {
     return !chunk.canBeInitial();
@@ -26,10 +24,15 @@ function isAsync(chunk) {
 }
 
 function getChunkEntryNames(chunk) {
-  return Array.from(new Set(getNames(chunk.groupsIterable)));
+  if ('groupsIterable' in chunk) {
+    return Array.from(new Set(getNames(chunk.groupsIterable)));
+  } else {
+    return chunk.entrypoints.map(e => e.options.name);
+  }
 }
 
 function getNames(groups) {
+  const Entrypoint = require('webpack/lib/Entrypoint');
   const names = [];
   for (const group of groups) {
     if (group instanceof Entrypoint) {
