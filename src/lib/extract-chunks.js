@@ -16,51 +16,63 @@
  */
 
 function extractChunks({compilation, optionsInclude}) {
-  try {
-    // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
-    // part of code-splitting with import() or require.ensure(). By default, asyncChunks
-    // get wired up using link rel=preload when using this plugin. This behaviour can be
-    // configured to preload all types of chunks or just prefetch chunks as needed.
-    if (optionsInclude === undefined || optionsInclude === 'asyncChunks') {
-      return compilation.chunks.filter(chunk => {
-        if ('canBeInitial' in chunk) {
-          return !chunk.canBeInitial();
-        } else {
-          return !chunk.isInitial();
-        }
-      });
-    }
-
-    if (optionsInclude === 'initial') {
-      return compilation.chunks.filter(chunk => {
-        if ('canBeInitial' in chunk) {
-          return chunk.canBeInitial();
-        } else {
-          return chunk.isInitial();
-        }
-      });
-    }
-
-    if (optionsInclude === 'allChunks') {
-      // Async chunks, vendor chunks, normal chunks.
-      return compilation.chunks;
-    }
-
-    if (optionsInclude === 'allAssets') {
-      // Every asset, regardless of which chunk it's in.
-      // Wrap it in a single, "psuedo-chunk" return value.
-      return [{files: Object.keys(compilation.assets)}];
-    }
-
+  let includeChunks;
+  let includeType;
+  if (optionsInclude && typeof optionsInclude === 'object') {
+    includeType = optionsInclude.type;
+    includeChunks = optionsInclude.chunks;
+  } else {
     if (Array.isArray(optionsInclude)) {
-      // Keep only user specified chunks.
-      return compilation.chunks.filter((chunk) => chunk.name && optionsInclude.includes(chunk.name));
+      includeChunks = optionsInclude;
+    } else {
+      includeType = optionsInclude;
     }
-  } catch (error) {
-    return compilation.chunks;
   }
 
-  throw new Error(`The 'include' option isn't set to a recognized value: ${optionsInclude}`);
+  let chunks = compilation.chunks;
+
+  if (Array.isArray(includeChunks)) {
+    chunks = chunks.filter((chunk) => {
+      return chunk.name && includeChunks.includes(chunk.name)
+    });
+  }
+
+  // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
+  // part of code-splitting with import() or require.ensure(). By default, asyncChunks
+  // get wired up using link rel=preload when using this plugin. This behaviour can be
+  // configured to preload all types of chunks or just prefetch chunks as needed.
+  if (includeType === undefined || includeType === 'asyncChunks') {
+    return chunks.filter(chunk => {
+      if ('canBeInitial' in chunk) {
+        return !chunk.canBeInitial();
+      } else {
+        return !chunk.isInitial();
+      }
+    });
+  }
+
+  if (includeType === 'initial') {
+    return chunks.filter(chunk => {
+      if ('canBeInitial' in chunk) {
+        return chunk.canBeInitial();
+      } else {
+        return chunk.isInitial();
+      }
+    });
+  }
+
+  if (includeType === 'allChunks') {
+    // Async chunks, vendor chunks, normal chunks.
+    return chunks;
+  }
+
+  if (includeType === 'allAssets') {
+    // Every asset, regardless of which chunk it's in.
+    // Wrap it in a single, "psuedo-chunk" return value.
+    return [{files: Object.keys(compilation.assets)}];
+  }
+
+  return chunks;
 }
 
 module.exports = extractChunks;
