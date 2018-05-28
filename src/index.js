@@ -34,9 +34,14 @@ class PreloadPlugin {
       `An invalid webpackVersion was supplied. Supported values: ${Object.keys(doesChunkBelongToHTML)}.`);
 
     const options = this.options;
+    const htmlFilename = htmlPluginData.plugin.options.filename;
 
     // Bail out early if we're configured to exclude this HTML file.
-    if (options.excludeHtmlNames.includes(htmlPluginData.plugin.options.filename)) {
+    if (options.excludeHtmlNames.includes(htmlFilename)) {
+      return htmlPluginData;
+    }
+
+    if (options.includeHtmlNames && !(options.includeHtmlNames.includes(htmlFilename))) {
       return htmlPluginData;
     }
 
