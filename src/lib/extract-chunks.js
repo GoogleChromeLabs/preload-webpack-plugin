@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-const Entrypoint = require('webpack/lib/Entrypoint')
+const Entrypoint = require('webpack/lib/Entrypoint');
 
-function isAsync (chunk) {
+function isAsync(chunk) {
   if ('canBeInitial' in chunk) {
     return !chunk.canBeInitial();
   } else {
@@ -25,23 +25,23 @@ function isAsync (chunk) {
   }
 }
 
-function getChunkEntryNames (chunk) {
-  return Array.from(new Set(getNames(chunk.groupsIterable)))
+function getChunkEntryNames(chunk) {
+  return Array.from(new Set(getNames(chunk.groupsIterable)));
 }
 
-function getNames (groups) {
-  const names = []
+function getNames(groups) {
+  const names = [];
   for (const group of groups) {
     if (group instanceof Entrypoint) {
       // entrypoint
       if (group.options.name) {
-        names.push(group.options.name)
+        names.push(group.options.name);
       }
     } else {
-      names.push(...getNames(group.parentsIterable))
+      names.push(...getNames(group.parentsIterable));
     }
   }
-  return names
+  return names;
 }
 
 function extractChunks({compilation, optionsInclude}) {
@@ -64,15 +64,15 @@ function extractChunks({compilation, optionsInclude}) {
 
   if (Array.isArray(includeChunks)) {
     chunks = chunks.filter((chunk) => {
-      return chunk.name && includeChunks.includes(chunk.name)
+      return chunk.name && includeChunks.includes(chunk.name);
     });
   }
 
   if (Array.isArray(includeEntryPoints)) {
     chunks = chunks.filter(chunk => {
-      const names = getChunkEntryNames(chunk)
-      return names.some(name => includeEntryPoints.includes(name))
-    })
+      const names = getChunkEntryNames(chunk);
+      return names.some(name => includeEntryPoints.includes(name));
+    });
   }
 
   // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
