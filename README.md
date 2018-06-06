@@ -203,16 +203,15 @@ directory.
 
 ## Support
 
-If you've found an error or run into problems, please file an issue:
-[https://github.com/googlechrome/preload-webpack-plugin/issues](https://github.com/googlechrome/preload-webpack-plugin/issues)
+If you've found an error or run into problems, please [file an issue](https://github.com/googlechrome/preload-webpack-plugin/issues).
 
 Patches are encouraged, and may be submitted by forking this project and
 submitting a pull request through GitHub.
 
 ## Contributing workflow
 
-`index.js` and `lib/` contains the primary source for the plugin,
-`test` contains tests and `demo` contains demo code.
+[`index.js`](index.js) and [`lib/`](lib/) contains the primary source for the plugin.
+[`test/`](test/) contains tests and [`demo/`](demo/) contains demo code.
 
 Test the plugin:
 
