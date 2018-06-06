@@ -54,6 +54,7 @@
     "webpack": ">=3.2.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.49"
+    "@babel/runtime": "^7.0.0-beta.49",
+    "url-parse": "^1.4.1"
   }
 }

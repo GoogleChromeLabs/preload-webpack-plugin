@@ -19,7 +19,7 @@ function extractChunks({compilation, optionsInclude}) {
   try {
     // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
     // part of code-splitting with import() or require.ensure(). By default, asyncChunks
-    // get wired up using link rel=preload when using this plugin. This behaviour can be
+    // get wired up using link rel=preload when using this plugin. This behavior can be
     // configured to preload all types of chunks or just prefetch chunks as needed.
     if (optionsInclude === undefined || optionsInclude === 'asyncChunks') {
       return compilation.chunks.filter(chunk => {

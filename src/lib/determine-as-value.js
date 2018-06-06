@@ -17,7 +17,8 @@
 
 const assert = require('assert');
 const path = require('path');
-const {URL} = require('url');
+// The first-party 'url' module isn't available in node 6.
+const URL = require('url-parse');
 
 function determineAsValue({optionsAs, href}) {
   assert(href, `The 'href' parameter was not provided.`);
