@@ -120,16 +120,24 @@ class PreloadPlugin {
       compiler.hooks.compilation.tap(
         this.constructor.name,
         compilation => {
-          compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
-            this.constructor.name,
-            (htmlPluginData, callback) => {
-              try {
-                callback(null, this.addLinks('v4', compilation, htmlPluginData));
-              } catch (error) {
-                callback(error);
+          if ('htmlWebpackPluginBeforeHtmlProcessing' in compilation.hooks) {
+            compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+              this.constructor.name,
+              (htmlPluginData, callback) => {
+                try {
+                  callback(null, this.addLinks('v4', compilation, htmlPluginData));
+                } catch (error) {
+                  callback(error);
+                }
               }
-            }
-          );
+            );
+          } else {
+            const error = new Error(`Unable to tap into the ` +
+              `HtmlWebpackPlugin's callbacks. Make sure to list ` +
+              `${this.constructor.name} at some point after ` +
+              `HtmlWebpackPlugin in webpack's plugins array.`);
+            compilation.errors.push(error);
+          }
         }
       );
     } else {

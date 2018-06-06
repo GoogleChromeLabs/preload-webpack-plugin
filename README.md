@@ -1,22 +1,18 @@
-preload-webpack-plugin
-============
+# preload-webpack-plugin
+
 [![NPM version][npm-img]][npm-url]
 [![NPM downloads][npm-downloads-img]][npm-url]
 [![Dependency Status][daviddm-img]][daviddm-url]
 
 ![preloads-plugin-compressor](https://cloud.githubusercontent.com/assets/110953/22451103/7700b812-e720-11e6-89e8-a6d4e3533159.png)
 
-A Webpack plugin for automatically wiring up asynchronous (and other types) of JavaScript
+A webpack plugin for automatically wiring up asynchronous (and other types) of JavaScript
 chunks using `<link rel='preload'>`. This helps with lazy-loading.
 
-Note: This is an extension plugin for [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that
+Note: This is an extension plugin for [`html-webpack-plugin`](https://github.com/jantimon/html-webpack-plugin) - a plugin that
 simplifies the creation of HTML files to serve your webpack bundles.
 
-This plugin is a stop-gap until we add support for asynchronous chunk wiring to
-[script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin/pull/9).
-
-Introduction
-------------
+## Introduction
 
 [Preload](https://w3c.github.io/preload/) is a web standard aimed at improving performance
 and granular loading of resources. It is a declarative fetch that can tell a browser to start fetching a
@@ -33,36 +29,34 @@ For example, `chunk.31132ae6680e598f8879.js`.
 To make it easier to wire up async chunks for lazy-loading, this plugin offers a drop-in way to wire them up
 using `<link rel='preload'>`.
 
-Pre-requisites
---------------
-This module requires Webpack 2.2.0 and above. It also requires that you're using
-[html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) in your Webpack project.
+## Prerequisites
 
-Installation
----------------
+This module requires webpack 2.2.0 and above. It also requires that you're using
+[`html-webpack-plugin`](https://github.com/ampedandwired/html-webpack-plugin) in your webpack project.
 
-First, install the package as a dependency in your package.json:
+## Installation
+
+First, install the package as a dependency in your `package.json`:
 
 ```sh
 $ npm install --save-dev preload-webpack-plugin
 ```
 
-Alternatively, using yarn:
+Alternatively, using `yarn`:
 
 ```sh
-yarn add -D preload-webpack-plugin
+$ yarn add -D preload-webpack-plugin
 ```
 
-Usage
------------------
+## Usage
 
-Next, in your Webpack config, `require()` the preload plugin as follows:
+In your webpack config, `require()` the preload plugin as follows:
 
 ```js
 const PreloadWebpackPlugin = require('preload-webpack-plugin');
 ```
 
-and finally, configure the plugin in your Webpack `plugins` array after `HtmlWebpackPlugin`:
+and finally, configure the plugin in your webpack `plugins` array after `HtmlWebpackPlugin`:
 
 ```js
 plugins: [
@@ -145,6 +139,7 @@ plugins: [
 ```
 
 In case you work with named chunks, you can explicitly specify which ones to `include` by passing an array:
+
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
@@ -161,8 +156,7 @@ will inject just this:
 <link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
 ```
 
-Filtering chunks
----------------------
+### Filtering chunks
 
 There may be chunks that you don't want to have preloaded (sourcemaps, for example). Before preloading each chunk, this plugin checks that the file does not match any regex in the `fileBlacklist` option. The default value of this blacklist is `[/\.map/]`, meaning no sourcemaps will be preloaded. You can easily override this:
 
@@ -180,8 +174,7 @@ new PreloadWebpackPlugin({
 })
 ```
 
-Resource Hints
----------------------
+### Resource Hints
 
 Should you wish to use Resource Hints (such as `prefetch`) instead of `preload`, this plugin also supports wiring those up.
 
@@ -203,25 +196,23 @@ For the async chunks mentioned earlier, the plugin would update your HTML to the
 <link rel="prefetch" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-Demo
-----------------------
+## Demo
 
 A demo application implementing the [PRPL pattern](https://developers.google.com/web/fundamentals/performance/prpl-pattern/) with React that uses this plugin can be found in the `demo`
 directory.
 
-Support
--------
+## Support
 
-If you've found an error in this sample, please file an issue:
+If you've found an error or run into problems, please file an issue:
 [https://github.com/googlechrome/preload-webpack-plugin/issues](https://github.com/googlechrome/preload-webpack-plugin/issues)
 
 Patches are encouraged, and may be submitted by forking this project and
 submitting a pull request through GitHub.
 
-Contributing workflow
----------------------
+## Contributing workflow
 
-`index.js` contains the primary source for the plugin, `test` contains tests and `demo` contains demo code.
+`index.js` and `lib/` contains the primary source for the plugin,
+`test` contains tests and `demo` contains demo code.
 
 Test the plugin:
 
@@ -230,35 +221,34 @@ $ npm install
 $ npm run test
 ```
 
-Lint the plugin:
+The project is written in ES2015, and is transpiled to support node 6 and above.
 
-```sh
-$ npm run lint
-$ npm run lint-fix # fix linting issues
-```
+## Additional notes
 
-The project is written in ES2015, but does not use a build-step. This may change depending on
-any Node version support requests posted to the issue tracker.
-
-Additional Notes
----------------------------
-
-* Be careful not to `preload` resources a user is unlikely to need. This can waste their bandwidth.
-* Use `preload` for the current session if you think a user is likely to visit the next page. There is no
+- Be careful not to `preload` resources a user is unlikely to need. This can waste their bandwidth.
+- Use `preload` for the current session if you think a user is likely to visit the next page. There is no
   100% guarantee preloaded items will end up in the HTTP Cache and read locally beyond this session.
-* If optimising for future sessions, use `prefetch` and `preconnect`. Prefetched resources are maintained
+- If optimizing for future sessions, use `prefetch` and `preconnect`. Prefetched resources are maintained
   in the HTTP Cache for at least 5 minutes (in Chrome) regardless of the resource's cachability.
 
-Related plugins
---------------------------
+## Alternative tools
 
-* [script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin) - Enhances html-webpack-plugin with options including 'async', 'defer', 'module' and preload (no async chunk support yet)
-* [resource-hints-webpack-plugin](https://github.com/jantimon/resource-hints-webpack-plugin) - Automatically wires resource hints for your resources (similarly no async chunk support)
+- webpack's native support:
+  As of the [v4.6.0 release](https://github.com/webpack/webpack/releases/tag/v4.6.0)
+  of webpack, there is native support for generating both prefetch and preload `<link>`s via ["magic" comments in your `import()` statements](https://medium.com/webpack/link-rel-prefetch-preload-in-webpack-51a52358f84c).
 
-License
--------
+- [script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin):
+  Enhances `html-webpack-plugin` with options including 'async', 'defer', 'module' and 'preload'.
+  As of [v1.7.0](https://github.com/numical/script-ext-html-webpack-plugin/pull/9#issuecomment-278239875),
+  it supports async chunks.
 
-Copyright 2017 Google, Inc.
+- [resource-hints-webpack-plugin](https://github.com/jantimon/resource-hints-webpack-plugin):
+  Automatically wires resource hints for your resources. This plugin does does not currently
+  support async chunks.
+
+## License
+
+Copyright 2018 Google, Inc.
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor
 license agreements.  See the NOTICE file distributed with this work for
