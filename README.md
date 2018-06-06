@@ -210,7 +210,7 @@ submitting a pull request through GitHub.
 
 ## Contributing workflow
 
-[`index.js`](index.js) and [`lib/`](lib/) contains the primary source for the plugin.
+[`src/index.js`](src/index.js) and [`src/lib/`](src/lib/) contains the primary source for the plugin.
 [`test/`](test/) contains tests and [`demo/`](demo/) contains demo code.
 
 Test the plugin:
