@@ -8,4 +8,4 @@ node_js:
   - 'node'
 
 install:
-  - npm ci
+  - npm ci && cd test/webpack3 && npm ci && cd ../webpack4 && npm ci
