@@ -174,7 +174,30 @@ new PreloadWebpackPlugin({
 })
 ```
 
-### Resource Hints
+## Filtering HTML
+
+You may not want to preload resources in some of your HTML files. You can use `excludeHtmlNames` to
+tell this plugin to ignore one or more files.
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin({
+    filename: 'index.html',
+    template: 'src/index.html',
+    chunks: ['main']
+  }),
+  new HtmlWebpackPlugin({
+    filename: 'example.html',
+    template: 'src/example.html',
+    chunks: ['exampleEntry']
+  }),
+  // Only apply the plugin to index.html, not example.html.
+  new PreloadWebpackPlugin({
+    excludeHtmlNames: ['example.html'],
+  })
+```
+
+### Resource hints
 
 Should you wish to use Resource Hints (such as `prefetch`) instead of `preload`, this plugin also supports wiring those up.
 

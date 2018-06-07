@@ -656,6 +656,56 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       });
       compiler.outputFileSystem = new MemoryFileSystem();
     });
+
+    it(`should modify the HTML of multiple assets that don't match the exclusion name`, function(done) {
+      const compiler = webpack({
+        entry: {
+          js: path.join(__dirname, 'fixtures', 'file.js')
+        },
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'bundle.js',
+          chunkFilename: '[name].[chunkhash].js',
+          publicPath: '/',
+        },
+        plugins: [
+          new HtmlWebpackPlugin({
+            filename: 'file1.html',
+          }),
+          new HtmlWebpackPlugin({
+            filename: 'file2.html',
+          }),
+          new PreloadPlugin({
+            excludeHtmlNames: ['does-not-match.html'],
+          })
+        ]
+      }, function(err, result) {
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+          result.compilation.errors.join('\n=========\n'));
+
+        const html1 = result.compilation.assets['file1.html'].source();
+        const dom1 = new JSDOM(html1);
+
+        const links1 = dom1.window.document.head.querySelectorAll('link');
+        expect(links1.length).toBe(1);
+        expect(links1[0].getAttribute('rel')).toBe('preload');
+        expect(links1[0].getAttribute('as')).toBe('script');
+        expect(links1[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'));
+
+        const html2 = result.compilation.assets['file2.html'].source();
+        const dom2 = new JSDOM(html2);
+
+        const links2 = dom2.window.document.head.querySelectorAll('link');
+        expect(links2.length).toBe(1);
+        expect(links2[0].getAttribute('rel')).toBe('preload');
+        expect(links2[0].getAttribute('as')).toBe('script');
+        expect(links2[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'));
+
+        done();
+      });
+      compiler.outputFileSystem = new MemoryFileSystem();
+    });
   });
 
   describe(`${descriptionPrefix} When used in an invalid configuration,`, function() {
