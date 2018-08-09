@@ -27,17 +27,6 @@ class PreloadPlugin {
 
   generateLinks (compilation, htmlPluginData) {
     const options = this.options
-    const htmlFilename = htmlPluginData.plugin.options.filename
-
-    // Bail out early if we're configured to exclude this HTML file.
-    if (options.excludeHtmlNames.includes(htmlFilename)) {
-      return htmlPluginData
-    }
-
-    if (options.includeHtmlNames && !(options.includeHtmlNames.includes(htmlFilename))) {
-      return htmlPluginData
-    }
-
     const extractedChunks = extractChunks({
       compilation,
       optionsInclude: options.include
@@ -109,29 +98,42 @@ class PreloadPlugin {
   }
 
   apply (compiler) {
+    const skip = data => {
+      const htmlFilename = data.plugin.options.filename
+      const exclude = this.options.excludeHtmlNames
+      const include = this.options.includeHtmlNames
+      return (
+        (include && !(include.includes(htmlFilename))) ||
+        (exclude && exclude.includes(htmlFilename))
+      )
+    }
+
     compiler.hooks.compilation.tap(
       this.constructor.name,
       compilation => {
-        compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+        compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tap(
           this.constructor.name,
-          (htmlPluginData, callback) => {
-            try {
-              callback(null, this.generateLinks(compilation, htmlPluginData))
-            } catch (error) {
-              callback(error)
+          (htmlPluginData) => {
+            if (skip(htmlPluginData)) {
+              return
             }
+            this.generateLinks(compilation, htmlPluginData)
           }
         )
 
         compilation.hooks.htmlWebpackPluginAlterAssetTags.tap(
           this.constructor.name,
           (htmlPluginData) => {
+            if (skip(htmlPluginData)) {
+              return
+            }
             if (this.resourceHints) {
               htmlPluginData.head = [
                 ...this.resourceHints,
                 ...htmlPluginData.head
               ]
             }
+            return htmlPluginData
           }
         )
       }
