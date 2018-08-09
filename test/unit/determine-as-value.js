@@ -15,72 +15,72 @@
  * limitations under the License.
  */
 
-const determineAsValue = require('../../src/lib/determine-as-value');
+const determineAsValue = require('../../src/lib/determine-as-value')
 
-describe(`Error Conditions:`, function() {
-  it(`should throw when called without an href value`, function(done) {
+describe(`Error Conditions:`, function () {
+  it(`should throw when called without an href value`, function (done) {
     expect(
-      () => determineAsValue({optionsAs: 'ignored'})
-    ).toThrowError(`The 'href' parameter was not provided.`);
+      () => determineAsValue({ optionsAs: 'ignored' })
+    ).toThrowError(`The 'href' parameter was not provided.`)
 
-    done();
-  });
+    done()
+  })
 
-  it(`should throw when called with an invalid optionsAs value`, function(done) {
+  it(`should throw when called with an invalid optionsAs value`, function (done) {
     expect(
-      () => determineAsValue({href: '/', optionsAs: {}})
-    ).toThrowError(`The 'as' option isn't set to a recognized value: [object Object]`);
+      () => determineAsValue({ href: '/', optionsAs: {}})
+    ).toThrowError(`The 'as' option isn't set to a recognized value: [object Object]`)
 
-    done();
-  });
-});
+    done()
+  })
+})
 
-describe(`OptionsAs Tests:`, function() {
-  it(`should support passing in a string`, function(done) {
-    const asValue = determineAsValue({href: '/', optionsAs: 'test'});
+describe(`OptionsAs Tests:`, function () {
+  it(`should support passing in a string`, function (done) {
+    const asValue = determineAsValue({ href: '/', optionsAs: 'test' })
 
-    expect(asValue).toEqual('test');
+    expect(asValue).toEqual('test')
 
-    done();
-  });
+    done()
+  })
 
-  it(`should support passing in a function`, function(done) {
-    const asValue = determineAsValue({href: '/', optionsAs: (href) => href + 'test'});
+  it(`should support passing in a function`, function (done) {
+    const asValue = determineAsValue({ href: '/', optionsAs: (href) => href + 'test' })
 
-    expect(asValue).toEqual('/test');
+    expect(asValue).toEqual('/test')
 
-    done();
-  });
+    done()
+  })
 
-  it(`should support passing in undefined, when href ends with .css`, function(done) {
-    const asValue = determineAsValue({href: '/test.css'});
+  it(`should support passing in undefined, when href ends with .css`, function (done) {
+    const asValue = determineAsValue({ href: '/test.css' })
 
-    expect(asValue).toEqual('style');
+    expect(asValue).toEqual('style')
 
-    done();
-  });
+    done()
+  })
 
-  it(`should support passing in undefined, when href ends with .woff2`, function(done) {
-    const asValue = determineAsValue({href: '/test.woff2'});
+  it(`should support passing in undefined, when href ends with .woff2`, function (done) {
+    const asValue = determineAsValue({ href: '/test.woff2' })
 
-    expect(asValue).toEqual('font');
+    expect(asValue).toEqual('font')
 
-    done();
-  });
+    done()
+  })
 
-  it(`should support passing in undefined, when href ends with .js`, function(done) {
-    const asValue = determineAsValue({href: '/test.js'});
+  it(`should support passing in undefined, when href ends with .js`, function (done) {
+    const asValue = determineAsValue({ href: '/test.js' })
 
-    expect(asValue).toEqual('script');
+    expect(asValue).toEqual('script')
 
-    done();
-  });
+    done()
+  })
 
-  it(`should support passing in undefined, when href ends with anything else`, function(done) {
-    const asValue = determineAsValue({href: '/test.ignored'});
+  it(`should support passing in undefined, when href ends with anything else`, function (done) {
+    const asValue = determineAsValue({ href: '/test.ignored' })
 
-    expect(asValue).toEqual('script');
+    expect(asValue).toEqual('script')
 
-    done();
-  });
-});
+    done()
+  })
+})

@@ -20,6 +20,6 @@ const defaultOptions = {
   include: 'asyncChunks',
   excludeHtmlNames: [],
   fileBlacklist: [/\.map/]
-};
+}
 
-module.exports = defaultOptions;
+module.exports = defaultOptions

@@ -1,4 +1,10 @@
-This is a fork of [preload-webpack-plugin](https://github.com/GoogleChromeLabs/preload-webpack-plugin) with a few additions for multi-entry-page webpack setups:
+@vue/preload-webpack-plugin
+============
+[![NPM version][npm-img]][npm-url]
+
+This is a fork of [preload-webpack-plugin](https://github.com/GoogleChromeLabs/preload-webpack-plugin) with a number of changes:
+
+- Uses a combination of `htmlWebpackPluginBeforeHtmlProcessing` and `htmlWebpackPluginAlterAssetTags` hooks to inject links as objects rather than strings. This allows for more flexibility when the tags need to be altered by other plugins.
 
 - `include` option can be an object in the shape of `{ type?, chunks?, entries? }`. For example, to prefetch async chunks for a specific entry point:
 
@@ -14,15 +20,11 @@ This is a fork of [preload-webpack-plugin](https://github.com/GoogleChromeLabs/p
 
 - Added an `includeHtmlNames` option so that the plugin is only applied to a specific HTML file.
 
+- Drops support for webpack v3.
+
 - Drops support for Node < 6.
 
 ---
-
-preload-webpack-plugin
-============
-[![NPM version][npm-img]][npm-url]
-[![NPM downloads][npm-downloads-img]][npm-url]
-[![Dependency Status][daviddm-img]][daviddm-url]
 
 ![preloads-plugin-compressor](https://cloud.githubusercontent.com/assets/110953/22451103/7700b812-e720-11e6-89e8-a6d4e3533159.png)
 
@@ -295,8 +297,5 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
 
-[npm-url]: https://npmjs.org/package/preload-webpack-plugin
-[npm-img]: https://badge.fury.io/js/preload-webpack-plugin.svg
-[npm-downloads-img]: https://img.shields.io/npm/dm/preload-webpack-plugin.svg?style=flat-square
-[daviddm-img]: https://david-dm.org/googlechromelabs/preload-webpack-plugin.svg
-[daviddm-url]: https://david-dm.org/googlechromelabs/preload-webpack-plugin
+[npm-url]: https://www.npmjs.com/package/@vue/preload-webpack-plugin
+[npm-img]: https://badge.fury.io/js/%40vue%2Fpreload-webpack-plugin.svg

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const testSpec = require('../spec');
+const testSpec = require('../spec')
 
-const descriptionPrefix = '[webpack 4]';
-testSpec({webpack, HtmlWebpackPlugin, descriptionPrefix});
+const descriptionPrefix = '[webpack 4]'
+testSpec({ webpack, HtmlWebpackPlugin, descriptionPrefix })

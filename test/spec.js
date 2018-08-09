@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-const MemoryFileSystem = require('memory-fs');
-const path = require('path');
-const {JSDOM} = require('jsdom');
+const MemoryFileSystem = require('memory-fs')
+const path = require('path')
+const { JSDOM } = require('jsdom')
 
-const PreloadPlugin = require('../src/index');
+const PreloadPlugin = require('../src/index')
 
-const OUTPUT_DIR = path.join(__dirname, 'dist');
+const OUTPUT_DIR = path.join(__dirname, 'dist')
 
-module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
-  describe(`${descriptionPrefix} When passed async chunks, it`, function() {
-    it('should add preload tags', function(done) {
+module.exports = ({ descriptionPrefix, webpack, HtmlWebpackPlugin }) => {
+  describe(`${descriptionPrefix} When passed async chunks, it`, function () {
+    it('should add preload tags', function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -34,33 +34,33 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
           new PreloadPlugin()
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
+        done()
+      })
 
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it('should add prefetch tags', function(done) {
+    it('should add prefetch tags', function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -69,7 +69,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -77,25 +77,25 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             rel: 'prefetch'
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('prefetch');
-        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('prefetch')
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it('should respect publicPath', function(done) {
+    it('should respect publicPath', function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -104,41 +104,40 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].js',
-          publicPath: 'https://example.com/',
+          publicPath: 'https://example.com/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
           new PreloadPlugin()
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('href')).toMatch(new RegExp('^https://example\\.com/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^https://example\\.com/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
+  })
 
-
-  describe(`${descriptionPrefix} When passed non-async chunks, it`, function() {
-    it('should add preload tags', function(done) {
+  describe(`${descriptionPrefix} When passed non-async chunks, it`, function () {
+    it('should add preload tags', function (done) {
       const compiler = webpack({
         entry: path.join(__dirname, 'fixtures', 'file.js'),
         output: {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -148,29 +147,29 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: 'allChunks'
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toBe('/bundle.js');
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('script');
-        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toBe('/bundle.js')
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('script')
+        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it('should set as="style" for CSS, and as="script" otherwise', function(done) {
+    it('should set as="style" for CSS, and as="script" otherwise', function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -179,7 +178,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].css',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -188,28 +187,27 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: 'allChunks'
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toBe('/bundle.js');
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('style');
-        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toBe('/bundle.js')
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('style')
+        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
     it('should use the value for the as attribute passed in the configuration', (done) => {
       const compiler = webpack({
@@ -218,7 +216,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].css',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -228,27 +226,27 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: 'allChunks'
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('testing');
-        expect(links[0].getAttribute('href')).toBe('/bundle.js');
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('testing');
-        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('testing')
+        expect(links[0].getAttribute('href')).toBe('/bundle.js')
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('testing')
+        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
     it('should set as="font" and crossOrigin for .woff2 assets', (done) => {
       const compiler = webpack({
@@ -259,7 +257,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].woff2',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -268,71 +266,71 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: 'allChunks'
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toBe('/bundle.js');
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('font');
-        expect(links[1].hasAttribute('crossorigin')).toBeTruthy();
-        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toBe('/bundle.js')
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('font')
+        expect(links[1].hasAttribute('crossorigin')).toBeTruthy()
+        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it('should allow setting the as value via a callback', function(done) {
+    it('should allow setting the as value via a callback', function (done) {
       const compiler = webpack({
         entry: path.join(__dirname, 'fixtures', 'file.js'),
         output: {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].css',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
             rel: 'preload',
             as: (href) => href.startsWith('/chunk') ? 'test2' : 'test1',
-            include: 'allChunks',
-          }),
-        ],
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+            include: 'allChunks'
+          })
+        ]
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('test1');
-        expect(links[0].getAttribute('href')).toBe('/bundle.js');
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('test2');
-        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('test1')
+        expect(links[0].getAttribute('href')).toBe('/bundle.js')
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('test2')
+        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
+  })
 
-  describe(`${descriptionPrefix} When passed normal chunks, it`, function() {
-    it('should add prefetch links', function(done) {
+  describe(`${descriptionPrefix} When passed normal chunks, it`, function () {
+    it('should add prefetch links', function (done) {
       const compiler = webpack({
         entry: path.join(__dirname, 'fixtures', 'file.js'),
         output: {
@@ -345,41 +343,41 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: 'allChunks'
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('prefetch');
-        expect(links[0].hasAttribute('as')).toBeFalsy();
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('prefetch')
+        expect(links[0].hasAttribute('as')).toBeFalsy()
         // There's a difference in the output when run in webpack v3 and v4.
         //   v3 has compilation.chunks[0].files: ['0.js']
         //   v4 has compilation.chunks[0].files: ['home.js']
-        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'));
-        expect(links[1].getAttribute('rel')).toBe('prefetch');
-        expect(links[1].hasAttribute('as')).toBeFalsy();
-        expect(links[1].getAttribute('href')).toBe('main.js');
+        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'))
+        expect(links[1].getAttribute('rel')).toBe('prefetch')
+        expect(links[1].hasAttribute('as')).toBeFalsy()
+        expect(links[1].getAttribute('href')).toBe('main.js')
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
+  })
 
-  describe(`${descriptionPrefix} When using 'include', it`, function() {
-    it('should filter based on chunkname', function(done) {
+  describe(`${descriptionPrefix} When using 'include', it`, function () {
+    it('should filter based on chunkname', function (done) {
       const compiler = webpack({
         entry: path.join(__dirname, 'fixtures', 'file.js'),
         output: {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: '[name].[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -389,26 +387,26 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: ['home']
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it('should filter based on chunkname, including the sourcemap', function(done) {
+    it('should filter based on chunkname, including the sourcemap', function (done) {
       const compiler = webpack({
         entry: path.join(__dirname, 'fixtures', 'file.js'),
         devtool: 'cheap-source-map',
@@ -416,7 +414,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: '[name].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -426,121 +424,121 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
             include: ['home'],
             // Disable the default file blacklist.
             // This will cause the .map file to be included.
-            fileBlacklist: [],
+            fileBlacklist: []
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(2);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toBe('/home.js');
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('script');
-        expect(links[1].getAttribute('href')).toBe('/home.js.map');
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(2)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toBe('/home.js')
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('script')
+        expect(links[1].getAttribute('href')).toBe('/home.js.map')
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
     // TODO: Is this testing the right thing? We might need a test around, e.g.,
     // using a different plugin that adds assets without also creating chunks.
-    it(`should pull in additional assets when set to 'allAssets'`, function(done) {
+    it(`should pull in additional assets when set to 'allAssets'`, function (done) {
       const compiler = webpack({
         // Use "the" as the prefix for the entry names, to ensure that they're
         // sorted after either 0.js or home.js (depending on the webpack version).
         entry: {
           theFirstEntry: path.join(__dirname, 'fixtures', 'file.js'),
-          theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js'),
+          theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js')
         },
         output: {
           path: OUTPUT_DIR,
-          filename: '[name].js',
+          filename: '[name].js'
         },
         plugins: [
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
-            include: 'allAssets',
-          }),
+            include: 'allAssets'
+          })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(3);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(3)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
         // There's a difference in the output when run in webpack v3 and v4.
         //   v3 has compilation.chunks[0].files: ['0.js']
         //   v4 has compilation.chunks[0].files: ['home.js']
-        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'));
-        expect(links[1].getAttribute('rel')).toBe('preload');
-        expect(links[1].getAttribute('as')).toBe('script');
-        expect(links[1].getAttribute('href')).toBe('theFirstEntry.js');
-        expect(links[2].getAttribute('rel')).toBe('preload');
-        expect(links[2].getAttribute('as')).toBe('script');
-        expect(links[2].getAttribute('href')).toBe('theSecondEntry.js');
+        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'))
+        expect(links[1].getAttribute('rel')).toBe('preload')
+        expect(links[1].getAttribute('as')).toBe('script')
+        expect(links[1].getAttribute('href')).toBe('theFirstEntry.js')
+        expect(links[2].getAttribute('rel')).toBe('preload')
+        expect(links[2].getAttribute('as')).toBe('script')
+        expect(links[2].getAttribute('href')).toBe('theSecondEntry.js')
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it(`should honor fileWhitelist and fileBlacklist, with the blacklist taking precedence`, function(done) {
+    it(`should honor fileWhitelist and fileBlacklist, with the blacklist taking precedence`, function (done) {
       const compiler = webpack({
         // Use "the" as the prefix for the entry names, to ensure that they're
         // sorted after either 0.js or home.js (depending on the webpack version).
         entry: {
           theFirstEntry: path.join(__dirname, 'fixtures', 'file.js'),
-          theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js'),
+          theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js')
         },
         output: {
           path: OUTPUT_DIR,
-          filename: '[name].js',
+          filename: '[name].js'
         },
         plugins: [
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
             include: 'allAssets',
             fileWhitelist: [/Entry/],
-            fileBlacklist: [/First/],
-          }),
+            fileBlacklist: [/First/]
+          })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toBe('theSecondEntry.js');
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toBe('theSecondEntry.js')
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
+  })
 
-  describe(`${descriptionPrefix} When using an empty config, it`, function() {
-    it('should not preload .map files', function(done) {
+  describe(`${descriptionPrefix} When using an empty config, it`, function () {
+    it('should not preload .map files', function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -549,35 +547,35 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: 'chunk.[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         devtool: 'cheap-source-map',
         plugins: [
           new HtmlWebpackPlugin(),
           new PreloadPlugin()
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
+  })
 
-  describe(`${descriptionPrefix} When excludeHtmlNames is used,`, function() {
-    it(`should not modify the HTML of an asset that's listed`, function(done) {
+  describe(`${descriptionPrefix} When excludeHtmlNames is used,`, function () {
+    it(`should not modify the HTML of an asset that's listed`, function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -586,33 +584,33 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: '[name].[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin({
-            filename: 'ignored.html',
+            filename: 'ignored.html'
           }),
           new PreloadPlugin({
-            excludeHtmlNames: ['ignored.html'],
+            excludeHtmlNames: ['ignored.html']
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const html = result.compilation.assets['ignored.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['ignored.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(0);
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(0)
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
 
-    it(`should not modify the HTML of an asset that's listed, but modify the HTML of the asset that isn't listed`, function(done) {
+    it(`should not modify the HTML of an asset that's listed, but modify the HTML of the asset that isn't listed`, function (done) {
       const compiler = webpack({
         entry: {
           js: path.join(__dirname, 'fixtures', 'file.js')
@@ -621,40 +619,40 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
           path: OUTPUT_DIR,
           filename: 'bundle.js',
           chunkFilename: '[name].[chunkhash].js',
-          publicPath: '/',
+          publicPath: '/'
         },
         plugins: [
           new HtmlWebpackPlugin({
-            filename: 'ignored.html',
+            filename: 'ignored.html'
           }),
           new HtmlWebpackPlugin(),
           new PreloadPlugin({
-            excludeHtmlNames: ['ignored.html'],
+            excludeHtmlNames: ['ignored.html']
           })
         ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
+      }, function (err, result) {
+        expect(err).toBeFalsy(err)
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+          result.compilation.errors.join('\n=========\n'))
 
-        const ignoredHtml = result.compilation.assets['ignored.html'].source();
-        const ignoredDom = new JSDOM(ignoredHtml);
+        const ignoredHtml = result.compilation.assets['ignored.html'].source()
+        const ignoredDom = new JSDOM(ignoredHtml)
 
-        const ignoredLinks = ignoredDom.window.document.head.querySelectorAll('link');
-        expect(ignoredLinks.length).toBe(0);
+        const ignoredLinks = ignoredDom.window.document.head.querySelectorAll('link')
+        expect(ignoredLinks.length).toBe(0)
 
-        const html = result.compilation.assets['index.html'].source();
-        const dom = new JSDOM(html);
+        const html = result.compilation.assets['index.html'].source()
+        const dom = new JSDOM(html)
 
-        const links = dom.window.document.head.querySelectorAll('link');
-        expect(links.length).toBe(1);
-        expect(links[0].getAttribute('rel')).toBe('preload');
-        expect(links[0].getAttribute('as')).toBe('script');
-        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'));
+        const links = dom.window.document.head.querySelectorAll('link')
+        expect(links.length).toBe(1)
+        expect(links[0].getAttribute('rel')).toBe('preload')
+        expect(links[0].getAttribute('as')).toBe('script')
+        expect(links[0].getAttribute('href')).toMatch(new RegExp('^/home\\.'))
 
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
-};
+        done()
+      })
+      compiler.outputFileSystem = new MemoryFileSystem()
+    })
+  })
+}

@@ -15,67 +15,67 @@
  * limitations under the License.
  */
 
-function isAsync(chunk) {
+function isAsync (chunk) {
   if ('canBeInitial' in chunk) {
-    return !chunk.canBeInitial();
+    return !chunk.canBeInitial()
   } else {
-    return !chunk.isInitial();
+    return !chunk.isInitial()
   }
 }
 
-function getChunkEntryNames(chunk) {
+function getChunkEntryNames (chunk) {
   if ('groupsIterable' in chunk) {
-    return Array.from(new Set(getNames(chunk.groupsIterable)));
+    return Array.from(new Set(getNames(chunk.groupsIterable)))
   } else {
-    return chunk.entrypoints.map(e => e.options.name);
+    return chunk.entrypoints.map(e => e.options.name)
   }
 }
 
-function getNames(groups) {
-  const Entrypoint = require('webpack/lib/Entrypoint');
-  const names = [];
+function getNames (groups) {
+  const Entrypoint = require('webpack/lib/Entrypoint')
+  const names = []
   for (const group of groups) {
     if (group instanceof Entrypoint) {
       // entrypoint
       if (group.options.name) {
-        names.push(group.options.name);
+        names.push(group.options.name)
       }
     } else {
-      names.push(...getNames(group.parentsIterable));
+      names.push(...getNames(group.parentsIterable))
     }
   }
-  return names;
+  return names
 }
 
-function extractChunks({compilation, optionsInclude}) {
-  let includeChunks;
-  let includeType;
-  let includeEntryPoints;
+function extractChunks ({ compilation, optionsInclude }) {
+  let includeChunks
+  let includeType
+  let includeEntryPoints
   if (optionsInclude && typeof optionsInclude === 'object') {
-    includeType = optionsInclude.type;
-    includeChunks = optionsInclude.chunks;
-    includeEntryPoints = optionsInclude.entries;
+    includeType = optionsInclude.type
+    includeChunks = optionsInclude.chunks
+    includeEntryPoints = optionsInclude.entries
   } else {
     if (Array.isArray(optionsInclude)) {
-      includeChunks = optionsInclude;
+      includeChunks = optionsInclude
     } else {
-      includeType = optionsInclude;
+      includeType = optionsInclude
     }
   }
 
-  let chunks = compilation.chunks;
+  let chunks = compilation.chunks
 
   if (Array.isArray(includeChunks)) {
     chunks = chunks.filter((chunk) => {
-      return chunk.name && includeChunks.includes(chunk.name);
-    });
+      return chunk.name && includeChunks.includes(chunk.name)
+    })
   }
 
   if (Array.isArray(includeEntryPoints)) {
     chunks = chunks.filter(chunk => {
-      const names = getChunkEntryNames(chunk);
-      return names.some(name => includeEntryPoints.includes(name));
-    });
+      const names = getChunkEntryNames(chunk)
+      return names.some(name => includeEntryPoints.includes(name))
+    })
   }
 
   // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
@@ -83,25 +83,25 @@ function extractChunks({compilation, optionsInclude}) {
   // get wired up using link rel=preload when using this plugin. This behaviour can be
   // configured to preload all types of chunks or just prefetch chunks as needed.
   if (includeType === undefined || includeType === 'asyncChunks') {
-    return chunks.filter(isAsync);
+    return chunks.filter(isAsync)
   }
 
   if (includeType === 'initial') {
-    return chunks.filter(chunk => !isAsync(chunk));
+    return chunks.filter(chunk => !isAsync(chunk))
   }
 
   if (includeType === 'allChunks') {
     // Async chunks, vendor chunks, normal chunks.
-    return chunks;
+    return chunks
   }
 
   if (includeType === 'allAssets') {
     // Every asset, regardless of which chunk it's in.
     // Wrap it in a single, "psuedo-chunk" return value.
-    return [{files: Object.keys(compilation.assets)}];
+    return [{ files: Object.keys(compilation.assets) }]
   }
 
-  return chunks;
+  return chunks
 }
 
-module.exports = extractChunks;
+module.exports = extractChunks

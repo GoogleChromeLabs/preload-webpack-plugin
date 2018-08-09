@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-const assert = require('assert');
-const path = require('path');
-const {URL} = require('url');
+const assert = require('assert')
+const path = require('path')
+const { URL } = require('url')
 
-function determineAsValue({optionsAs, href}) {
-  assert(href, `The 'href' parameter was not provided.`);
+function determineAsValue ({ optionsAs, href }) {
+  assert(href, `The 'href' parameter was not provided.`)
 
   switch (typeof optionsAs) {
     case 'string': {
-      return optionsAs;
+      return optionsAs
     }
 
     case 'function': {
-      return optionsAs(href);
+      return optionsAs(href)
     }
 
     case 'undefined': {
@@ -36,23 +36,23 @@ function determineAsValue({optionsAs, href}) {
       // value based on the suffix of filename.
 
       // We only care about the pathname, so just use any domain when constructing the URL.
-      const url = new URL(href, 'https://example.com');
-      const extension = path.extname(url.pathname);
+      const url = new URL(href, 'https://example.com')
+      const extension = path.extname(url.pathname)
 
       if (extension === '.css') {
-        return 'style';
+        return 'style'
       }
 
       if (extension === '.woff2') {
-        return 'font';
+        return 'font'
       }
 
-      return 'script';
+      return 'script'
     }
 
     default:
-      throw new Error(`The 'as' option isn't set to a recognized value: ${optionsAs}`);
+      throw new Error(`The 'as' option isn't set to a recognized value: ${optionsAs}`)
   }
 }
 
-module.exports = determineAsValue;
+module.exports = determineAsValue
