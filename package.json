@@ -21,7 +21,7 @@
     "resource hints"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=7.5.0"
   },
   "scripts": {
     "lint": "eslint --format=codeframe .",
