@@ -31,7 +31,7 @@ class PreloadPlugin {
 
   addLinks(webpackVersion, compilation, htmlPluginData) {
     assert(webpackVersion in doesChunkBelongToHTML,
-      `An invalid webpackVersion was supplied. Supported values: ${Object.keys(doesChunkBelongToHTML)}.`);
+        `An invalid webpackVersion was supplied. Supported values: ${Object.keys(doesChunkBelongToHTML)}.`);
 
     const options = this.options;
 
@@ -118,27 +118,27 @@ class PreloadPlugin {
   apply(compiler) {
     if ('hooks' in compiler) {
       compiler.hooks.compilation.tap(
-        this.constructor.name,
-        compilation => {
-          if ('htmlWebpackPluginBeforeHtmlProcessing' in compilation.hooks) {
-            compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
-              this.constructor.name,
-              (htmlPluginData, callback) => {
-                try {
-                  callback(null, this.addLinks('v4', compilation, htmlPluginData));
-                } catch (error) {
-                  callback(error);
-                }
-              }
-            );
-          } else {
-            const error = new Error(`Unable to tap into the ` +
+          this.constructor.name,
+          compilation => {
+            if ('htmlWebpackPluginBeforeHtmlProcessing' in compilation.hooks) {
+              compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
+                  this.constructor.name,
+                  (htmlPluginData, callback) => {
+                    try {
+                      callback(null, this.addLinks('v4', compilation, htmlPluginData));
+                    } catch (error) {
+                      callback(error);
+                    }
+                  }
+              );
+            } else {
+              const error = new Error(`Unable to tap into the ` +
               `HtmlWebpackPlugin's callbacks. Make sure to list ` +
               `${this.constructor.name} at some point after ` +
               `HtmlWebpackPlugin in webpack's plugins array.`);
-            compilation.errors.push(error);
+              compilation.errors.push(error);
+            }
           }
-        }
       );
     } else {
       compiler.plugin('compilation', (compilation) => {

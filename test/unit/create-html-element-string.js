@@ -20,7 +20,7 @@ const createHtmlElementString = require('../../src/lib/create-html-element-strin
 describe(`Error Conditions:`, function() {
   it(`should throw when called without an elementName`, function(done) {
     expect(
-      () => createHtmlElementString({})
+        () => createHtmlElementString({})
     ).toThrowError('Please provide an element name.');
 
     done();
@@ -28,7 +28,7 @@ describe(`Error Conditions:`, function() {
 
   it(`should throw when called with an elementName matching \\W`, function(done) {
     expect(
-      () => createHtmlElementString({elementName: 'Testing!'})
+        () => createHtmlElementString({elementName: 'Testing!'})
     ).toThrowError('The element name contains invalid characters.');
 
     done();

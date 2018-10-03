@@ -21,7 +21,7 @@ describe(`Edge Conditions:`, function() {
   it(`should throw when called with HTML lacking a </head> or <body>`, function(done) {
     const html = '<html></html>';
     expect(
-      () => insertLinksIntoHead({html, links: ['<link>']})
+        () => insertLinksIntoHead({html, links: ['<link>']})
     ).toThrowError(`The HTML provided did not contain a </head> or a <body>:\n\n<html></html>`);
 
     done();

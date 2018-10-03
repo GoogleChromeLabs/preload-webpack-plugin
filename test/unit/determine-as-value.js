@@ -20,7 +20,7 @@ const determineAsValue = require('../../src/lib/determine-as-value');
 describe(`Error Conditions:`, function() {
   it(`should throw when called without an href value`, function(done) {
     expect(
-      () => determineAsValue({optionsAs: 'ignored'})
+        () => determineAsValue({optionsAs: 'ignored'})
     ).toThrowError(`The 'href' parameter was not provided.`);
 
     done();
@@ -28,7 +28,7 @@ describe(`Error Conditions:`, function() {
 
   it(`should throw when called with an invalid optionsAs value`, function(done) {
     expect(
-      () => determineAsValue({href: '/', optionsAs: {}})
+        () => determineAsValue({href: '/', optionsAs: {}})
     ).toThrowError(`The 'as' option isn't set to a recognized value: [object Object]`);
 
     done();

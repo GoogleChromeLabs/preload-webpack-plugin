@@ -43,7 +43,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -80,7 +80,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -113,7 +113,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -151,7 +151,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -191,7 +191,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -231,7 +231,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -271,7 +271,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -311,7 +311,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -348,7 +348,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -392,7 +392,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -432,7 +432,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -474,7 +474,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -522,7 +522,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -559,7 +559,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['index.html'].source();
         const dom = new JSDOM(html);
@@ -599,7 +599,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html = result.compilation.assets['ignored.html'].source();
         const dom = new JSDOM(html);
@@ -635,7 +635,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const ignoredHtml = result.compilation.assets['ignored.html'].source();
         const ignoredDom = new JSDOM(ignoredHtml);
@@ -682,7 +682,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(0,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
 
         const html1 = result.compilation.assets['file1.html'].source();
         const dom1 = new JSDOM(html1);
@@ -731,7 +731,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       }, function(err, result) {
         expect(err).toBeFalsy(err);
         expect(result.compilation.errors.length).toBe(1,
-          result.compilation.errors.join('\n=========\n'));
+            result.compilation.errors.join('\n=========\n'));
         expect(result.compilation.errors[0]).toMatch(new RegExp('HtmlWebpackPlugin'));
 
         done();
