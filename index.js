@@ -21,6 +21,8 @@ require('object.values').shim();
 
 const objectAssign = require('object-assign');
 
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 const PLUGIN_NAME = 'preload-webpack-plugin';
 
 const weblog = require('webpack-log');
@@ -97,13 +99,15 @@ class PreloadPlugin {
 
   // handler use for webpack v4
   hooksHandler(compilation) {
-    if (!compilation.hooks.htmlWebpackPluginAfterHtmlProcessing) {
+    const beforeEmit = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing ||
+      HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
+    if (!beforeEmit) {
       const message = `compilation.hooks.htmlWebpackPluginAfterHtmlProcessing is lost.
       Please make sure you have installed html-webpack-plugin and put it before ${PLUGIN_NAME}`;
       log.error(message);
       throw new Error(message);
     }
-    compilation.hooks.htmlWebpackPluginAfterHtmlProcessing
+    beforeEmit
       .tapAsync(PLUGIN_NAME, (htmlPluginData, cb) => this.afterHtmlProcessingFn(htmlPluginData, cb, compilation));
   }
 
