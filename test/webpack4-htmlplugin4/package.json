@@ -6,7 +6,7 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "html-webpack-plugin": "^4.0.0-beta.1",
+    "html-webpack-plugin": "^4.0.0-beta.2",
     "webpack": "^4.1.0"
   }
 }

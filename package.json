@@ -26,6 +26,7 @@
   "scripts": {
     "lint": "eslint --format=codeframe .",
     "test": "jasmine test/unit/* test/webpack*/index.js",
+    "test4": "jasmine test/webpack4-htmlplugin4/index.js",
     "coverage": "nyc npm run test",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src",
@@ -42,7 +43,7 @@
     "@babel/preset-env": "^7.1.0",
     "eslint": "^5.6.1",
     "eslint-config-google": "^0.10.0",
-    "html-webpack-plugin": "^4.0.0-beta.1",
+    "html-webpack-plugin": "^4.0.0-beta.2",
     "jasmine": "^3.2.0",
     "jsdom": "^12.1.0",
     "memory-fs": "^0.4.1",

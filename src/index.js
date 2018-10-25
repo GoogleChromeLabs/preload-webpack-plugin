@@ -121,49 +121,49 @@ class PreloadPlugin {
       compiler.hooks.compilation.tap(
           this.constructor.name,
           compilation => {
-            if ('htmlWebpackPluginBeforeHtmlProcessing' in compilation.hooks) {
-              // We're using html-webpack-plugin pre-v4.
-              compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
-                  this.constructor.name,
-                  (htmlPluginData, callback) => {
-                    try {
-                      callback(null, this.addLinks('v4', compilation, htmlPluginData));
-                    } catch (error) {
-                      callback(error);
-                    }
-                  }
-              );
-            } else {
-              // We might be using html-webpack-plugin v4+, or there might be a
-              // configuration error.
-              // See https://github.com/jharris4/html-webpack-include-assets-plugin/pull/34/files#diff-168726dbe96b3ce427e7fedce31bb0bcR349
-              const HtmlWebpackPlugin = require('html-webpack-plugin');
+            // This is set in html-webpack-plugin pre-v4.
+            let hook = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing;
 
-              if ('getHooks' in HtmlWebpackPlugin) {
-                const hooks = HtmlWebpackPlugin.getHooks(compilation);
-                if (hooks) {
-                  // We are in fact using html-webpack-plugin v4.
-                  hooks.alterAssetTags.tapAsync(
-                      this.constructor.name,
-                      (htmlPluginData, callback) => {
-                        try {
-                          callback(null, this.addLinks('v4', compilation, htmlPluginData));
-                        } catch (error) {
-                          callback(error);
-                        }
-                      }
-                  );
-                  return;
-                }
-              }
+            if (!hook) {
+              // This is set in html-webpack-plugin v4+.
 
-              // If we've gotten here, there might be a plugin ordering issue.
-              const error = new Error(`Unable to tap into the ` +
-              `HtmlWebpackPlugin's callbacks. Make sure to list ` +
-              `${this.constructor.name} at some point after ` +
-              `HtmlWebpackPlugin in webpack's plugins array.`);
-              compilation.errors.push(error);
+              // !! As per the docs for v4, I believe the following should work:
+              // const HtmlWebpackPlugin = require('html-webpack-plugin');
+              // hook = HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
+              // !! But when I try that, I get back a AsyncSeriesWaterfallHook
+              // !! instance, but tapping into it never leads to the callback
+              // !! being run.
+
+              // Only the following will work, if I use the same instance of the
+              // require('html-webpack-plugin') used in the main webpack config.
+              // For testing purposes, I'm assuming it's being passed in as
+              // part of this plugin's constructor.
+              hook = this.options.HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
             }
+
+            if (!hook) {
+              // If we've gotten here, there might be a plugin ordering issue.
+              const error = `Unable to tap into the ` +
+                `HtmlWebpackPlugin's callbacks. Make sure to list ` +
+                `${this.constructor.name} at some point after ` +
+                `HtmlWebpackPlugin in webpack's plugins array.`;
+              compilation.errors.push(error);
+              return;
+            }
+
+            hook.tapAsync(
+                this.constructor.name,
+                (htmlPluginData, callback) => {
+                  // !! We rely on htmlPluginData.assets.chunks.
+                  // !! When I run this code in v4, htmlPluginData.assets is
+                  // !! undefined.
+                  try {
+                    callback(null, this.addLinks('v4', compilation, htmlPluginData));
+                  } catch (error) {
+                    callback(error);
+                  }
+                }
+            );
           }
       );
     } else {
