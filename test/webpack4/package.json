@@ -1,5 +1,5 @@
 {
-  "name": "webpack3-tests",
+  "name": "webpack4-tests",
   "version": "1.0.0",
   "description": "Test environment needed for webpack 4.",
   "main": "index.js",

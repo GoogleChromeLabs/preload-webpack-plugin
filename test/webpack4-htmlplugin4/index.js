@@ -20,5 +20,5 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const testSpec = require('../spec');
 
-const descriptionPrefix = '[webpack 4 / html-webpack-plugin 3]';
+const descriptionPrefix = '[webpack 4 / html-webpack-plugin 4]';
 testSpec({webpack, HtmlWebpackPlugin, descriptionPrefix});

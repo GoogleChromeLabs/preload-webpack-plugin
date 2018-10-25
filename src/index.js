@@ -92,11 +92,11 @@ class PreloadPlugin {
           optionsAs: options.as,
         });
 
-        // On the off chance that we have a cross-origin 'href' attribute,
-        // set crossOrigin on the <link> to trigger CORS mode. Non-CORS
-        // fonts can't be used.
+        // On the off chance that we have an 'href' attribute with a
+        // cross-origin URL, set crossOrigin on the <link> to trigger CORS mode.
+        // when preloading fonts. (Non-CORS fonts can't be used.)
         if (attributes.as === 'font') {
-          attributes.crossorigin = '';
+          attributes.crossorigin = 'anonymous';
         }
       }
 
@@ -117,10 +117,12 @@ class PreloadPlugin {
 
   apply(compiler) {
     if ('hooks' in compiler) {
+      // We're using webpack v4+.
       compiler.hooks.compilation.tap(
           this.constructor.name,
           compilation => {
             if ('htmlWebpackPluginBeforeHtmlProcessing' in compilation.hooks) {
+              // We're using html-webpack-plugin pre-v4.
               compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(
                   this.constructor.name,
                   (htmlPluginData, callback) => {
@@ -132,6 +134,30 @@ class PreloadPlugin {
                   }
               );
             } else {
+              // We might be using html-webpack-plugin v4+, or there might be a
+              // configuration error.
+              // See https://github.com/jharris4/html-webpack-include-assets-plugin/pull/34/files#diff-168726dbe96b3ce427e7fedce31bb0bcR349
+              const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+              if ('getHooks' in HtmlWebpackPlugin) {
+                const hooks = HtmlWebpackPlugin.getHooks(compilation);
+                if (hooks) {
+                  // We are in fact using html-webpack-plugin v4.
+                  hooks.alterAssetTags.tapAsync(
+                      this.constructor.name,
+                      (htmlPluginData, callback) => {
+                        try {
+                          callback(null, this.addLinks('v4', compilation, htmlPluginData));
+                        } catch (error) {
+                          callback(error);
+                        }
+                      }
+                  );
+                  return;
+                }
+              }
+
+              // If we've gotten here, there might be a plugin ordering issue.
               const error = new Error(`Unable to tap into the ` +
               `HtmlWebpackPlugin's callbacks. Make sure to list ` +
               `${this.constructor.name} at some point after ` +
@@ -141,6 +167,8 @@ class PreloadPlugin {
           }
       );
     } else {
+      // We're using webpack pre-v4, which implies that we're also using
+      // html-webpack-plugin pre-v4.
       compiler.plugin('compilation', (compilation) => {
         compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
           try {
