@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-const assert = require('assert');
-
 const createHTMLElementString = require('./lib/create-html-element-string');
 const defaultOptions = require('./lib/default-options');
 const determineAsValue = require('./lib/determine-as-value');
-const doesChunkBelongToHTML = require('./lib/does-chunk-belong-to-html');
 const extractChunks = require('./lib/extract-chunks');
 const insertLinksIntoHead = require('./lib/insert-links-into-head');
 
@@ -29,10 +26,7 @@ class PreloadPlugin {
     this.options = Object.assign({}, defaultOptions, options);
   }
 
-  addLinks(webpackVersion, compilation, htmlPluginData) {
-    assert(webpackVersion in doesChunkBelongToHTML,
-        `An invalid webpackVersion was supplied. Supported values: ${Object.keys(doesChunkBelongToHTML)}.`);
-
+  addLinks(compilation, htmlPluginData) {
     const options = this.options;
 
     // Bail out early if we're configured to exclude this HTML file.
@@ -45,18 +39,8 @@ class PreloadPlugin {
       optionsInclude: options.include,
     });
 
-    const htmlChunks = options.include === 'allAssets' ?
-      // Handle all chunks.
-      extractedChunks :
-      // Only handle chunks imported by this HtmlWebpackPlugin.
-      extractedChunks.filter((chunk) => doesChunkBelongToHTML[webpackVersion]({
-        chunk,
-        compilation,
-        htmlAssetsChunks: Object.values(htmlPluginData.assets.chunks),
-      }));
-
     // Flatten the list of files.
-    const allFiles = htmlChunks.reduce((accumulated, chunk) => {
+    const allFiles = extractedChunks.reduce((accumulated, chunk) => {
       return accumulated.concat(chunk.files);
     }, []);
     const uniqueFiles = new Set(allFiles);
@@ -129,21 +113,11 @@ class PreloadPlugin {
               hook = HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
             }
 
-            if (!hook) {
-              // If we've gotten here, there might be a plugin ordering issue.
-              const error = `Unable to tap into the ` +
-                `HtmlWebpackPlugin's callbacks. Make sure to list ` +
-                `${this.constructor.name} at some point after ` +
-                `HtmlWebpackPlugin in webpack's plugins array.`;
-              compilation.errors.push(error);
-              return;
-            }
-
             hook.tapAsync(
                 this.constructor.name,
                 (htmlPluginData, callback) => {
                   try {
-                    callback(null, this.addLinks('v4', compilation, htmlPluginData));
+                    callback(null, this.addLinks(compilation, htmlPluginData));
                   } catch (error) {
                     callback(error);
                   }
@@ -157,7 +131,7 @@ class PreloadPlugin {
       compiler.plugin('compilation', (compilation) => {
         compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
           try {
-            callback(null, this.addLinks('v3', compilation, htmlPluginData));
+            callback(null, this.addLinks(compilation, htmlPluginData));
           } catch (error) {
             callback(error);
           }
