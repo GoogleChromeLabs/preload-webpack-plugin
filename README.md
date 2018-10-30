@@ -126,14 +126,19 @@ will be injected into the document `<head>`:
 <link rel="preload" as="script" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-You can also configure the plugin to preload all chunks (vendor, async, normal chunks) using `include: 'all'`, or only preload initial chunks with `include: 'initial'`:
+You can also configure the plugin to preload all chunks (vendor, async, and normal chunks) using
+`include: 'allChunks'`, or only preload initial chunks with `include: 'initial'`.
+
+It is very common in webpack to use loaders such as `file-loader` to generate assets for specific
+types, such as fonts or images. If you wish to preload these files as well, even if they don't
+belong to a chunk, you can use `include: 'allAssets'`.
 
 ```js
 plugins: [
   new HtmlWebpackPlugin(),
   new PreloadWebpackPlugin({
     rel: 'preload',
-    include: 'all' // or 'initial'
+    include: 'allChunks' // or 'initial', or 'allAssets'
   })
 ]
 ```
