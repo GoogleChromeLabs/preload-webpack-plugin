@@ -125,20 +125,8 @@ class PreloadPlugin {
             let hook = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing;
 
             if (!hook) {
-              // This is set in html-webpack-plugin v4+.
-
-              // !! As per the docs for v4, I believe the following should work:
-              // const HtmlWebpackPlugin = require('html-webpack-plugin');
-              // hook = HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
-              // !! But when I try that, I get back a AsyncSeriesWaterfallHook
-              // !! instance, but tapping into it never leads to the callback
-              // !! being run.
-
-              // Only the following will work, if I use the same instance of the
-              // require('html-webpack-plugin') used in the main webpack config.
-              // For testing purposes, I'm assuming it's being passed in as
-              // part of this plugin's constructor.
-              hook = this.options.HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
+              const HtmlWebpackPlugin = require('html-webpack-plugin');
+              hook = HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
             }
 
             if (!hook) {
@@ -154,9 +142,6 @@ class PreloadPlugin {
             hook.tapAsync(
                 this.constructor.name,
                 (htmlPluginData, callback) => {
-                  // !! We rely on htmlPluginData.assets.chunks.
-                  // !! When I run this code in v4, htmlPluginData.assets is
-                  // !! undefined.
                   try {
                     callback(null, this.addLinks('v4', compilation, htmlPluginData));
                   } catch (error) {
