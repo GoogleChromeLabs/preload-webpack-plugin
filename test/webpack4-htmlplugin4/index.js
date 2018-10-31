@@ -16,10 +16,7 @@
  */
 
 const webpack = require('webpack');
-// For v4, we need to require the same instance of html-webpack-plugin as what
-// ends up being require'ed inside of preload-webpack-plugin.
-// See https://github.com/jantimon/html-webpack-plugin/issues/1091
-const HtmlWebpackPlugin = require('../../node_modules/html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const testSpec = require('../spec');
 

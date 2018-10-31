@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+const assert = require('assert');
+
 const createHTMLElementString = require('./lib/create-html-element-string');
 const defaultOptions = require('./lib/default-options');
 const determineAsValue = require('./lib/determine-as-value');
@@ -109,8 +111,11 @@ class PreloadPlugin {
             let hook = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing;
 
             if (!hook) {
-              const HtmlWebpackPlugin = require('html-webpack-plugin');
-              hook = HtmlWebpackPlugin.getHooks(compilation).beforeEmit;
+              const [HtmlWebpackPlugin] = compiler.options.plugins.filter(
+                  (plugin) => plugin.constructor.name === 'HtmlWebpackPlugin');
+              assert(HtmlWebpackPlugin, 'Unable to find an instance of ' +
+                  'HtmlWebpackPlugin in the current compilation.');
+              hook = HtmlWebpackPlugin.constructor.getHooks(compilation).beforeEmit;
             }
 
             hook.tapAsync(
