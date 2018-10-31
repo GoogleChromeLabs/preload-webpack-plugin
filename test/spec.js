@@ -707,36 +707,4 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       compiler.outputFileSystem = new MemoryFileSystem();
     });
   });
-
-  describe(`${descriptionPrefix} When used in an invalid configuration,`, function() {
-    // We can't detect this error in webpack 3.
-    if (/webpack 3/.test(descriptionPrefix)) {
-      return;
-    }
-
-    it(`should trigger a compilation error when HtmlWebpackPlugin isn't also used`, function(done) {
-      const compiler = webpack({
-        entry: {
-          js: path.join(__dirname, 'fixtures', 'file.js')
-        },
-        output: {
-          path: OUTPUT_DIR,
-          filename: 'bundle.js',
-          chunkFilename: '[name].[chunkhash].js',
-          publicPath: '/',
-        },
-        plugins: [
-          new PreloadPlugin()
-        ]
-      }, function(err, result) {
-        expect(err).toBeFalsy(err);
-        expect(result.compilation.errors.length).toBe(1,
-            result.compilation.errors.join('\n=========\n'));
-        expect(result.compilation.errors[0]).toMatch(new RegExp('HtmlWebpackPlugin'));
-
-        done();
-      });
-      compiler.outputFileSystem = new MemoryFileSystem();
-    });
-  });
 };
