@@ -272,7 +272,7 @@ class PreloadPlugin {
           } else {
             asValue = options.as;
           }
-          const crossOrigin = asValue === 'font' ? 'crossorigin="crossorigin" ' : '';
+          const crossOrigin = asValue === 'font' ? 'crossorigin="anonymous" ' : '';
           filesToInclude+= `<link rel="${options.rel}" as="${asValue}" ${crossOrigin}href="${entry}">\n`;
         } else {
           // If preload isn't specified, the only other valid entry is prefetch here
