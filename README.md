@@ -248,6 +248,24 @@ plugins: [
   })
 ```
 
+## Control where the generated tags are inserted in the result HTML
+
+By default `PreloadWebpackPlugin` will insert the preload/prefetch tags in `<head></head>`.
+You can control the inserting point by overriding the default option.
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin({
+    filename: 'index.html',
+    template: 'src/index.html',
+    chunks: ['main']
+  }),
+  // I want to insert preload tags before this comment
+  new PreloadWebpackPlugin({
+    insertTagsBefore: '<!-- End of preload tags -->',
+  })
+```
+
 Resource Hints
 ---------------------
 
