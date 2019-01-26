@@ -79,6 +79,7 @@ const defaultOptions = {
   include: 'asyncChunks',
   fileBlacklist: [/\.map/],
   excludeHtmlNames: [],
+  insertTagsBefore: '</head>'
 };
 
 class PreloadPlugin {
@@ -281,9 +282,9 @@ class PreloadPlugin {
           filesToInclude+= `<link rel="${options.rel}" href="${entry}">\n`;
         }
       });
-    if (htmlPluginData.html.indexOf('</head>') !== -1) {
-      // If a valid closing </head> is found, update it to include preload/prefetch tags
-      htmlPluginData.html = htmlPluginData.html.replace('</head>', filesToInclude + '</head>');
+    if (htmlPluginData.html.indexOf(this.options.insertTagsBefore) !== -1) {
+      // If a valid inserting point is found (default to </head>), update it to include preload/prefetch tags
+      htmlPluginData.html = htmlPluginData.html.replace(this.options.insertTagsBefore, filesToInclude + this.options.insertTagsBefore);
     } else {
       // Otherwise assume at least a <body> is present and update it to include a new <head>
       htmlPluginData.html = htmlPluginData.html.replace('<body>', '<head>' + filesToInclude + '</head><body>');
