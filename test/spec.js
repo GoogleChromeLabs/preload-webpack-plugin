@@ -373,6 +373,46 @@ describe('PreloadPlugin filters chunks', function() {
     });
     compiler.outputFileSystem = new MemoryFileSystem();
   });
+
+  it('based on chunkid', (done) => {
+    const compiler = webpack({
+      entry: path.join(__dirname, 'fixtures', 'file.js'),
+      output: {
+        path: OUTPUT_DIR,
+        filename: 'bundle.js',
+        publicPath: '/',
+      },
+      plugins: [
+        new HtmlWebpackPlugin(),
+
+        // Setting home chunk id to "homeChunk"
+        new webpack.NamedChunksPlugin(chunk => {
+          const chunkName = chunk.name;
+
+          if (chunkName) {
+            if (chunkName === 'home') {
+              return 'homeChunk';
+            }
+
+            return chunk.name;
+          }
+        }),
+
+        // Preloading home chunk and searching by it chunk id
+        new PreloadPlugin({
+          include: ['homeChunk'],
+          searchByChunkId: true
+        })
+      ],
+    }, function(err, result) {
+      expect(err).toBeFalsy();
+      expect(JSON.stringify(result.compilation.errors)).toBe('[]');
+      const html = result.compilation.assets['index.html'].source();
+      expect(html).toContain('<link rel="preload" as="script" href="/homeChunk');
+      done();
+    });
+    compiler.outputFileSystem = new MemoryFileSystem();
+  });
 });
 
 describe('PreloadPlugin preloads all assets', function() {

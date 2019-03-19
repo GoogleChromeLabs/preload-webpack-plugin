@@ -161,6 +161,18 @@ will inject just this:
 <link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
 ```
 
+If you are using webpack's `NamedChunksPlugin` (or `NamedChunkIdsPlugin` if using webpack 5) you can also tell the plugin to search by the chunk id using the `searchByChunkId` option:
+```js
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    include: ['home'],
+    searchByChunkId: true
+  })
+]
+```
+
 It is very common in Webpack to use loaders such as `file-loader` to generate assets for specific
 types, such as fonts or images. If you wish to preload these files as well, you can use `include`
 with value `allAssets`:
