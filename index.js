@@ -79,6 +79,7 @@ const defaultOptions = {
   include: 'asyncChunks',
   fileBlacklist: [/\.map/],
   excludeHtmlNames: [],
+  searchByChunkId: false
 };
 
 class PreloadPlugin {
@@ -161,11 +162,17 @@ class PreloadPlugin {
       extractedChunks = compilation.chunks
         .filter((chunk) => {
           const chunkName = chunk.name;
-          // Works only for named chunks
-          if (!chunkName) {
+          const chunkId = chunk.id;
+
+          // Works only for named chunks, or chunks with id when "searchByChunkId" option is enabled
+          if (!chunkName && !options.searchByChunkId) {
             return false;
           }
-          return options.include.indexOf(chunkName) > -1;
+
+          return (
+            (options.include.indexOf(chunkName) > -1) ||
+            (options.searchByChunkId && options.include.indexOf(chunkId) > -1)
+          );
         });
     }
 
