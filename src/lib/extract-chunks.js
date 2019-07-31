@@ -31,7 +31,7 @@ function getChunkEntryNames (chunk) {
   }
 }
 
-function getNames (groups) {
+function getNames (groups, processed = new Set()) {
   const Entrypoint = require('webpack/lib/Entrypoint')
   const names = []
   for (const group of groups) {
@@ -40,8 +40,9 @@ function getNames (groups) {
       if (group.options.name) {
         names.push(group.options.name)
       }
-    } else {
-      names.push(...getNames(group.parentsIterable))
+    } else if(!processed.has(group)) {
+      processed.add(group)
+      names.push(...getNames(group.parentsIterable, processed))
     }
   }
   return names
