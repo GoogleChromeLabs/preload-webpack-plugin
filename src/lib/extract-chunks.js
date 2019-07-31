@@ -41,11 +41,11 @@ function getNames (groups, processed = new Set()) {
         names.push(group.options.name)
       }
     } else if(!processed.has(group)) {
-      processed.add(group);
+      processed.add(group)
       names.push(...getNames(group.parentsIterable, processed))
     }
   }
-  return names;
+  return names
 }
 
 function extractChunks ({ compilation, optionsInclude }) {
