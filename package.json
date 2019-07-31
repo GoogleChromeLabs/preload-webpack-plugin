@@ -25,12 +25,12 @@
   },
   "scripts": {
     "lint": "eslint --format=codeframe .",
-    "test": "jasmine test/unit/* test/e2e/index.js",
+    "test": "npm run lint && jasmine test/unit/* test/e2e/index.js",
     "coverage": "nyc npm run test",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src",
-    "publish-stable": "npm run lint && npm run test && npm run build && npm publish",
-    "publish-next": "npm run lint && npm run test && npm run build && npm publish --tag next"
+    "publish-stable": "npm run test && npm run build && npm publish",
+    "publish-next": "npm run test && npm run build && npm publish --tag next"
   },
   "main": "src/index.js",
   "files": [
