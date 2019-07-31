@@ -40,7 +40,7 @@ function getNames (groups, processed = new Set()) {
       if (group.options.name) {
         names.push(group.options.name)
       }
-    } else if(!processed.has(group)) {
+    } else if (!processed.has(group)) {
       processed.add(group)
       names.push(...getNames(group.parentsIterable, processed))
     }
