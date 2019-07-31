@@ -26,7 +26,8 @@
   "scripts": {
     "lint": "eslint --format=codeframe .",
     "test": "npm run lint && jasmine test/unit/* test/e2e/index.js",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "prepublishOnly": "npm run test"
   },
   "main": "src/index.js",
   "files": [
