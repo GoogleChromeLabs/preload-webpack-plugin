@@ -109,7 +109,7 @@ plugins: [
 ```
 
 Notice that if `as=font` is used in preload, crossorigin will be added, otherwise the font resource
-might be double fetched. Explains can be found in [this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf).
+might be double fetched. Explanations can be found in [this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf). See [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#What_types_of_content_can_be_preloaded) for possible `as` attribute values.
 
 By default, the plugin will assume async script chunks will be preloaded. This is the equivalent of:
 
