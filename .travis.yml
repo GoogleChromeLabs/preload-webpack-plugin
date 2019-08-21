@@ -1,11 +1,7 @@
 language: node_js
 
-cache:
-  directories:
-    - "$HOME/.npm"
-
 node_js:
-  - 'node'
+  - 8
 
 install:
-  - npm ci && cd test/webpack3 && npm ci && cd ../webpack4 && npm ci && cd ../webpack4-htmlplugin4 && npm ci && cd ../..
+  - npm ci && cd ../webpack4 && npm ci && cd ../webpack4-htmlplugin4 && npm ci && cd ../..

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Google Inc.
+ * Copyright 2019 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,47 +102,32 @@ class PreloadPlugin {
   }
 
   apply(compiler) {
-    if ('hooks' in compiler) {
-      // We're using webpack v4+.
-      compiler.hooks.compilation.tap(
-          this.constructor.name,
-          compilation => {
-            // This is set in html-webpack-plugin pre-v4.
-            let hook = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing;
+    compiler.hooks.compilation.tap(
+        this.constructor.name,
+        compilation => {
+          // This is set in html-webpack-plugin pre-v4.
+          let hook = compilation.hooks.htmlWebpackPluginAfterHtmlProcessing;
 
-            if (!hook) {
-              const [HtmlWebpackPlugin] = compiler.options.plugins.filter(
-                  (plugin) => plugin.constructor.name === 'HtmlWebpackPlugin');
-              assert(HtmlWebpackPlugin, 'Unable to find an instance of ' +
-                  'HtmlWebpackPlugin in the current compilation.');
-              hook = HtmlWebpackPlugin.constructor.getHooks(compilation).beforeEmit;
-            }
+          if (!hook) {
+            const [HtmlWebpackPlugin] = compiler.options.plugins.filter(
+                (plugin) => plugin.constructor.name === 'HtmlWebpackPlugin');
+            assert(HtmlWebpackPlugin, 'Unable to find an instance of ' +
+                'HtmlWebpackPlugin in the current compilation.');
+            hook = HtmlWebpackPlugin.constructor.getHooks(compilation).beforeEmit;
+          }
 
-            hook.tapAsync(
-                this.constructor.name,
-                (htmlPluginData, callback) => {
-                  try {
-                    callback(null, this.addLinks(compilation, htmlPluginData));
-                  } catch (error) {
-                    callback(error);
-                  }
+          hook.tapAsync(
+              this.constructor.name,
+              (htmlPluginData, callback) => {
+                try {
+                  callback(null, this.addLinks(compilation, htmlPluginData));
+                } catch (error) {
+                  callback(error);
                 }
-            );
-          }
-      );
-    } else {
-      // We're using webpack pre-v4, which implies that we're also using
-      // html-webpack-plugin pre-v4.
-      compiler.plugin('compilation', (compilation) => {
-        compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-          try {
-            callback(null, this.addLinks(compilation, htmlPluginData));
-          } catch (error) {
-            callback(error);
-          }
-        });
-      });
-    }
+              }
+          );
+        }
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Google Inc.
+ * Copyright 2019 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -357,10 +357,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
         expect(links.length).toBe(2);
         expect(links[0].getAttribute('rel')).toBe('prefetch');
         expect(links[0].hasAttribute('as')).toBeFalsy();
-        // There's a difference in the output when run in webpack v3 and v4.
-        //   v3 has compilation.chunks[0].files: ['0.js']
-        //   v4 has compilation.chunks[0].files: ['home.js']
-        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'));
+        expect(links[0].getAttribute('href')).toBe('home.js');
         expect(links[1].getAttribute('rel')).toBe('prefetch');
         expect(links[1].hasAttribute('as')).toBeFalsy();
         expect(links[1].getAttribute('href')).toBe('main.js');
@@ -455,8 +452,6 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
     // using a different plugin that adds assets without also creating chunks.
     it(`should pull in additional assets when set to 'allAssets'`, function(done) {
       const compiler = webpack({
-        // Use "the" as the prefix for the entry names, to ensure that they're
-        // sorted after either 0.js or home.js (depending on the webpack version).
         entry: {
           theFirstEntry: path.join(__dirname, 'fixtures', 'file.js'),
           theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js'),
@@ -483,10 +478,7 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
         expect(links.length).toBe(3);
         expect(links[0].getAttribute('rel')).toBe('preload');
         expect(links[0].getAttribute('as')).toBe('script');
-        // There's a difference in the output when run in webpack v3 and v4.
-        //   v3 has compilation.chunks[0].files: ['0.js']
-        //   v4 has compilation.chunks[0].files: ['home.js']
-        expect(['0.js', 'home.js']).toContain(links[0].getAttribute('href'));
+        expect(links[0].getAttribute('href')).toBe('home.js');
         expect(links[1].getAttribute('rel')).toBe('preload');
         expect(links[1].getAttribute('as')).toBe('script');
         expect(links[1].getAttribute('href')).toBe('theFirstEntry.js');
@@ -501,8 +493,6 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
 
     it(`should honor fileWhitelist and fileBlacklist, with the blacklist taking precedence`, function(done) {
       const compiler = webpack({
-        // Use "the" as the prefix for the entry names, to ensure that they're
-        // sorted after either 0.js or home.js (depending on the webpack version).
         entry: {
           theFirstEntry: path.join(__dirname, 'fixtures', 'file.js'),
           theSecondEntry: path.join(__dirname, 'fixtures', 'vendor.js'),

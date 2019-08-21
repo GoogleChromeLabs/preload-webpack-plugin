@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Google Inc.
+ * Copyright 2019 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 
 const assert = require('assert');
 const path = require('path');
-// The first-party 'url' module isn't available in node 6.
-const URL = require('url-parse');
+const {URL} = require('url');
 
 function determineAsValue({optionsAs, href}) {
   assert(href, `The 'href' parameter was not provided.`);
