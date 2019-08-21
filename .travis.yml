@@ -4,4 +4,4 @@ node_js:
   - 8
 
 install:
-  - npm ci && cd ../webpack4 && npm ci && cd ../webpack4-htmlplugin4 && npm ci && cd ../..
+  - npm ci && cd test/webpack4 && npm ci && cd ../webpack4-htmlplugin4 && npm ci && cd ../..
