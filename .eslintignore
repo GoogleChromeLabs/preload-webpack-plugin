@@ -1,4 +1,4 @@
-**/node_modules/**
-
-**/dist/**
-demo/**
+build/
+demo/
+test/fixtures/
+test/*/node_modules/

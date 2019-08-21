@@ -1,14 +1,7 @@
 language: node_js
+
 node_js:
-  - "7"
-  - "6"
-  - "5"
-  - "4"
-env:
-  - CXX=g++-4.8
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
+  - 8
+
+install:
+  - npm ci && cd test/webpack4 && npm ci && cd ../webpack4-htmlplugin4 && npm ci && cd ../..

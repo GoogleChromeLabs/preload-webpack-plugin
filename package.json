@@ -1,17 +1,13 @@
 {
   "name": "preload-webpack-plugin",
-  "version": "2.3.0",
-  "description": "Enhances html-webpack-plugin with link rel=preload wiring capabilities for scripts",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint --quiet -f codeframe index.js test/spec.js",
-    "lint-fix": "eslint --fix --quiet -f codeframe index.js test/spec.js",
-    "webpack-v3-t": "node_modules/jasmine/bin/jasmine.js test/webpack-v3.spec.js",
-    "test": "node_modules/jasmine/bin/jasmine.js test/spec.js && npm run webpack-v3-t"
+  "version": "3.0.0",
+  "description": "A webpack plugin for injecting <link rel='preload|prefecth'> into HtmlWebpackPlugin pages, with async chunk support",
+  "author": "Addy Osmani <addy.osmani@gmail.com> (https://github.com/addyosmani)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/googlechromelabs/preload-webpack-plugin/issues"
   },
-  "files": [
-    "index.js"
-  ],
+  "homepage": "https://github.com/googlechromelabs/preload-webpack-plugin",
   "repository": {
     "type": "git",
     "url": "https://github.com/googlechromelabs/preload-webpack-plugin.git"
@@ -21,32 +17,38 @@
     "plugin",
     "html-webpack-plugin",
     "script",
-    "preload",
-    "resource hints"
+    "preload"
   ],
-  "author": "Addy Osmani <addy.osmani@gmail.com> (https://github.com/addyosmani)",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/googlechromelabs/preload-webpack-plugin/issues"
+  "engines": {
+    "node": ">=8.0.0"
   },
-  "homepage": "https://github.com/googlechromelabs/preload-webpack-plugin",
+  "scripts": {
+    "lint": "eslint --format=codeframe .",
+    "test": "jasmine test/unit/* test/webpack*/index.js",
+    "coverage": "nyc npm run test",
+    "clean": "rimraf build",
+    "build": "npm run clean && babel --out-dir=build src",
+    "publish-stable": "npm run lint && npm run test && npm run build && npm publish",
+    "publish-next": "npm run lint && npm run test && npm run build && npm publish --tag next"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "devDependencies": {
-    "babel-eslint": "^8.2.2",
-    "css-loader": "^0.28.10",
-    "eslint": "^4.18.2",
-    "eslint-config-google": "^0.9.1",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.0.6",
-    "jasmine": "^3.1.0",
-    "webpack": "^4.1.0"
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "eslint": "^6.2.1",
+    "eslint-config-google": "^0.13.0",
+    "jasmine": "^3.4.0",
+    "jsdom": "^15.1.1",
+    "memory-fs": "^0.4.1",
+    "nyc": "^14.1.1",
+    "rimraf": "^3.0.0"
   },
   "peerDependencies": {
-    "webpack": "^4.0.1"
-  },
-  "dependencies": {
-    "object-assign": "^4.1.1",
-    "object.values": "^1.0.4",
-    "webpack-log": "^1.1.2"
+    "html-webpack-plugin": ">=3.0.0",
+    "webpack": ">=4.0.0"
   }
 }

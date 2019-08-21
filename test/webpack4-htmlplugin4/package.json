@@ -1,0 +1,12 @@
+{
+  "name": "webpack4-htmlplugin4-tests",
+  "version": "1.0.0",
+  "description": "Test environment needed for webpack 4 and the html-webpack-plugin 4.",
+  "main": "index.js",
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "html-webpack-plugin": "^4.0.0-beta.8",
+    "webpack": "^4.39.2"
+  }
+}
