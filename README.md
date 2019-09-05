@@ -77,9 +77,9 @@ plugins: [
 ]
 ```
 
-In case you need more fine-grained control of the `as` atribute, you could also provide a function here.
-When using it, entry name will be provided as the parameter, and function itself should return a
-string for `as` attribute:
+In case you need more fine-grained control of the `as` attribute, you could also
+provide a function here. When using it, entry name will be provided as the
+parameter, and function itself should return a string for `as` attribute:
 
 ```javascript
 plugins: [
@@ -96,8 +96,11 @@ plugins: [
 ]
 ```
 
-Notice that if `as=font` is used in preload, crossorigin will be added, otherwise the font resource
-might be double fetched. Explains can be found in [this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf).
+Notice that if `as=font` is used in preload, the `crossorigin` will also be
+added. Explains can be found in
+[this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf),
+and a list of common `as` values can be
+[found on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#What_types_of_content_can_be_preloaded).
 
 By default, the plugin will assume async script chunks will be preloaded. This is the equivalent of:
 
