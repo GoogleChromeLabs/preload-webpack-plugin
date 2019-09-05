@@ -31,7 +31,7 @@ using `<link rel='preload'>`.
 
 ## Prerequisites
 
-This module requires webpack 2.2.0 and above. It also requires that you're using
+This module requires webpack v4 and above. It also requires that you're using
 [`html-webpack-plugin`](https://github.com/ampedandwired/html-webpack-plugin) in your webpack project.
 
 ## Installation
@@ -42,12 +42,6 @@ First, install the package as a dependency in your `package.json`:
 $ npm install --save-dev preload-webpack-plugin
 ```
 
-Alternatively, using `yarn`:
-
-```sh
-$ yarn add -D preload-webpack-plugin
-```
-
 ## Usage
 
 In your webpack config, `require()` the preload plugin as follows:
@@ -56,7 +50,7 @@ In your webpack config, `require()` the preload plugin as follows:
 const PreloadWebpackPlugin = require('preload-webpack-plugin');
 ```
 
-and finally, configure the plugin in your webpack `plugins` array after `HtmlWebpackPlugin`:
+and finally, add the plugin to your webpack configuration's `plugins` array after `HtmlWebpackPlugin`:
 
 ```js
 plugins: [
@@ -224,11 +218,6 @@ For the async chunks mentioned earlier, the plugin would update your HTML to the
 <link rel="prefetch" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-## Demo
-
-A demo application implementing the [PRPL pattern](https://developers.google.com/web/fundamentals/performance/prpl-pattern/) with React that uses this plugin can be found in the `demo`
-directory.
-
 ## Support
 
 If you've found an error or run into problems, please [file an issue](https://github.com/googlechrome/preload-webpack-plugin/issues).
@@ -239,7 +228,7 @@ submitting a pull request through GitHub.
 ## Contributing workflow
 
 [`src/index.js`](src/index.js) and [`src/lib/`](src/lib/) contains the primary source for the plugin.
-[`test/`](test/) contains tests and [`demo/`](demo/) contains demo code.
+[`test/`](test/) contains tests.
 
 Test the plugin:
 
@@ -275,7 +264,7 @@ The project is written in ES2015, and is transpiled to support node 6 and above.
 
 ## License
 
-Copyright 2018 Google, Inc.
+Copyright 2019 Google, Inc.
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor
 license agreements.  See the NOTICE file distributed with this work for
