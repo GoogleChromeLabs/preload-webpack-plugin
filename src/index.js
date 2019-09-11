@@ -70,6 +70,11 @@ class PreloadPlugin {
         rel: options.rel,
       };
 
+      // See https://github.com/GoogleChromeLabs/preload-webpack-plugin/issues/69
+      if (options.media) {
+        attributes.media = options.media;
+      }
+
       // If we're preloading this resource (as opposed to prefetching),
       // then we need to set the 'as' attribute correctly.
       if (options.rel === 'preload') {

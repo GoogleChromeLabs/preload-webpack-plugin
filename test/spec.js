@@ -329,6 +329,45 @@ module.exports = ({descriptionPrefix, webpack, HtmlWebpackPlugin}) => {
       });
       compiler.outputFileSystem = new MemoryFileSystem();
     });
+
+    it('should use the value for the media attribute passed in the configuration', (done) => {
+      const compiler = webpack({
+        entry: path.join(__dirname, 'fixtures', 'file.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'bundle.js',
+          chunkFilename: 'chunk.[chunkhash].css',
+          publicPath: '/',
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new PreloadPlugin({
+            rel: 'preload',
+            media: '(min-width: 600px)',
+            include: 'allChunks'
+          }),
+        ]
+      }, function(err, result) {
+        expect(err).toBeFalsy(err);
+        expect(result.compilation.errors.length).toBe(0,
+            result.compilation.errors.join('\n=========\n'));
+
+        const html = result.compilation.assets['index.html'].source();
+        const dom = new JSDOM(html);
+
+        const links = dom.window.document.head.querySelectorAll('link');
+        expect(links.length).toBe(2);
+        expect(links[0].getAttribute('rel')).toBe('preload');
+        expect(links[0].getAttribute('media')).toBe('(min-width: 600px)');
+        expect(links[0].getAttribute('href')).toBe('/bundle.js');
+        expect(links[1].getAttribute('rel')).toBe('preload');
+        expect(links[1].getAttribute('media')).toBe('(min-width: 600px)');
+        expect(links[1].getAttribute('href')).toMatch(new RegExp('^/chunk\\.'));
+
+        done();
+      });
+      compiler.outputFileSystem = new MemoryFileSystem();
+    });
   });
 
   describe(`${descriptionPrefix} When passed normal chunks, it`, function() {
