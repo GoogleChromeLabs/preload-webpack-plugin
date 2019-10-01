@@ -221,6 +221,22 @@ For the async chunks mentioned earlier, the plugin would update your HTML to the
 <link rel="prefetch" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
+## Including media
+
+`<link>` elements have the ability to accept media attributes. These can accept media types or full-blown media queries, allowing you to do responsive preloading.
+
+You can pass the value for the media attribute in the `media` option:
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    media: '(min-width: 600px)'
+  })
+]
+```
+
 ## Support
 
 If you've found an error or run into problems, please [file an issue](https://github.com/googlechrome/preload-webpack-plugin/issues).
