@@ -94,6 +94,7 @@ class PreloadPlugin {
       const linkElementString = createHTMLElementString({
         attributes,
         elementName: 'link',
+        closingTagRequired: options.closingTagRequired
       });
       links.push(linkElementString);
     }
