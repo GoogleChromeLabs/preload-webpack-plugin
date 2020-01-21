@@ -36,9 +36,9 @@ const stubEntrypointsWithPreloadedChildren = {
 };
 
 const stubChunks = [
-  { id: 'chunk1', files: ['file1.js'] },
-  { id: 'chunk2', files: ['file2.js'] },
-  { id: 'chunk3', files: ['file3.js'] },
+  {id: 'chunk1', files: ['file1.js']},
+  {id: 'chunk2', files: ['file2.js']},
+  {id: 'chunk3', files: ['file3.js']},
 ];
 
 class StubCompilation {
