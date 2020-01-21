@@ -15,7 +15,35 @@
  * limitations under the License.
  */
 
-function extractChunks({compilation, optionsInclude}) {
+function getInitialChunks(compilation) {
+  return compilation.chunks.filter(chunk => {
+    if ('canBeInitial' in chunk) {
+      return !chunk.canBeInitial();
+    } else {
+      return !chunk.isInitial();
+    }
+  });
+}
+
+// This is an expensive operation as it uses getStats, but currently it is the only place we can get this data from.
+function extractChildAssets(compilation, rel) {
+  const stats = compilation.getStats().toJson({all: false, entrypoints: true, chunks: true});
+
+  const assets = Object.keys(stats.entrypoints).reduce((childAssets, entrypointKey) => {
+    const entrypoint = stats.entrypoints[entrypointKey];
+    childAssets = childAssets.concat(entrypoint.chunks.map(chunkId => stats.chunks.find(chunk => chunk.id === chunkId)));
+
+    if (entrypoint.childAssets && entrypoint.childAssets[rel]) {
+      childAssets.push({files: entrypoint.childAssets[rel]});
+    }
+
+    return childAssets;
+  }, []);
+
+  return assets;
+}
+
+function extractChunks({compilation, optionsInclude, rel}) {
   try {
     // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
     // part of code-splitting with import() or require.ensure(). By default, asyncChunks
@@ -32,13 +60,11 @@ function extractChunks({compilation, optionsInclude}) {
     }
 
     if (optionsInclude === 'initial') {
-      return compilation.chunks.filter(chunk => {
-        if ('canBeInitial' in chunk) {
-          return chunk.canBeInitial();
-        } else {
-          return chunk.isInitial();
-        }
-      });
+      return getInitialChunks(compilation);
+    }
+
+    if (optionsInclude === 'entryAndChildren') {
+      return extractChildAssets(compilation, rel);
     }
 
     if (optionsInclude === 'allChunks') {
