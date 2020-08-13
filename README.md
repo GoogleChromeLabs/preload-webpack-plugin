@@ -278,7 +278,7 @@ The project is written in ES2015, and is transpiled to support node 6 and above.
   it supports async chunks.
 
 - [resource-hints-webpack-plugin](https://github.com/jantimon/resource-hints-webpack-plugin):
-  Automatically wires resource hints for your resources. This plugin does does not currently
+  Automatically wires resource hints for your resources. This plugin does not currently
   support async chunks.
 
 ## License
