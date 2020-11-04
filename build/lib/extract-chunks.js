@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * @license
  * Copyright 2018 Google Inc.
@@ -14,8 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-function extractChunks({compilation, optionsInclude}) {
+function extractChunks({
+  compilation,
+  optionsInclude
+}) {
   try {
     // 'asyncChunks' are chunks intended for lazy/async loading usually generated as
     // part of code-splitting with import() or require.ensure(). By default, asyncChunks
@@ -49,12 +53,14 @@ function extractChunks({compilation, optionsInclude}) {
     if (optionsInclude === 'allAssets') {
       // Every asset, regardless of which chunk it's in.
       // Wrap it in a single, "psuedo-chunk" return value.
-      return [{files: Object.keys(compilation.assets)}];
+      return [{
+        files: Object.keys(compilation.assets)
+      }];
     }
 
     if (Array.isArray(optionsInclude)) {
       // Keep only user specified chunks.
-      return compilation.chunks.filter((chunk) => chunk.name && optionsInclude.includes(chunk.name));
+      return compilation.chunks.filter(chunk => chunk.name && optionsInclude.includes(chunk.name));
     }
   } catch (error) {
     return compilation.chunks;

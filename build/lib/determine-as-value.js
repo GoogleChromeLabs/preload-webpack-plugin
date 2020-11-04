@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * @license
  * Copyright 2019 Google Inc.
@@ -14,41 +16,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 const assert = require('assert');
-const path = require('path');
-const {URL} = require('url');
 
-function determineAsValue({optionsAs, href}) {
+const path = require('path');
+
+const {
+  URL
+} = require('url');
+
+function determineAsValue({
+  optionsAs,
+  href
+}) {
   assert(href, `The 'href' parameter was not provided.`);
 
   switch (typeof optionsAs) {
-    case 'string': {
-      return optionsAs;
-    }
-
-    case 'function': {
-      return optionsAs(href);
-    }
-
-    case 'undefined': {
-      // If `as` value is not provided in option, dynamically determine the correct
-      // value based on the suffix of filename.
-
-      // We only care about the pathname, so just use any domain when constructing the URL.
-      const url = new URL(href, 'https://example.com');
-      const extension = path.extname(url.pathname);
-
-      if (extension === '.css') {
-        return 'style';
+    case 'string':
+      {
+        return optionsAs;
       }
 
-      if (extension === '.woff2') {
-        return 'font';
+    case 'function':
+      {
+        return optionsAs(href);
       }
 
-      return 'script';
-    }
+    case 'undefined':
+      {
+        // If `as` value is not provided in option, dynamically determine the correct
+        // value based on the suffix of filename.
+        // We only care about the pathname, so just use any domain when constructing the URL.
+        const url = new URL(href, 'https://example.com');
+        const extension = path.extname(url.pathname);
+
+        if (extension === '.css') {
+          return 'style';
+        }
+
+        if (extension === '.woff2') {
+          return 'font';
+        }
+
+        return 'script';
+      }
 
     default:
       throw new Error(`The 'as' option isn't set to a recognized value: ${optionsAs}`);

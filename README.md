@@ -31,7 +31,7 @@ using `<link rel='preload'>`.
 
 ## Prerequisites
 
-This module requires webpack v4 and above. It also requires that you're using
+This module requires webpack 2.2.0 and above. It also requires that you're using
 [`html-webpack-plugin`](https://github.com/ampedandwired/html-webpack-plugin) in your webpack project.
 
 ## Installation
@@ -42,6 +42,12 @@ First, install the package as a dependency in your `package.json`:
 $ npm install --save-dev preload-webpack-plugin
 ```
 
+Alternatively, using `yarn`:
+
+```sh
+$ yarn add -D preload-webpack-plugin
+```
+
 ## Usage
 
 In your webpack config, `require()` the preload plugin as follows:
@@ -50,7 +56,7 @@ In your webpack config, `require()` the preload plugin as follows:
 const PreloadWebpackPlugin = require('preload-webpack-plugin');
 ```
 
-and finally, add the plugin to your webpack configuration's `plugins` array after `HtmlWebpackPlugin`:
+and finally, configure the plugin in your webpack `plugins` array after `HtmlWebpackPlugin`:
 
 ```js
 plugins: [
@@ -77,9 +83,9 @@ plugins: [
 ]
 ```
 
-In case you need more fine-grained control of the `as` attribute, you could also
-provide a function here. When using it, entry name will be provided as the
-parameter, and function itself should return a string for `as` attribute:
+In case you need more fine-grained control of the `as` atribute, you could also provide a function here.
+When using it, entry name will be provided as the parameter, and function itself should return a
+string for `as` attribute:
 
 ```javascript
 plugins: [
@@ -96,11 +102,8 @@ plugins: [
 ]
 ```
 
-Notice that if `as=font` is used in preload, the `crossorigin` will also be
-added. Explains can be found in
-[this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf),
-and a list of common `as` values can be
-[found on MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#What_types_of_content_can_be_preloaded).
+Notice that if `as=font` is used in preload, crossorigin will be added, otherwise the font resource
+might be double fetched. Explains can be found in [this article](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf).
 
 By default, the plugin will assume async script chunks will be preloaded. This is the equivalent of:
 
@@ -221,21 +224,10 @@ For the async chunks mentioned earlier, the plugin would update your HTML to the
 <link rel="prefetch" href="chunk.d15e7fdfc91b34bb78c4.js">
 ```
 
-## Including media
+## Demo
 
-`<link>` elements have the ability to accept media attributes. These can accept media types or full-blown media queries, allowing you to do responsive preloading.
-
-You can pass the value for the media attribute in the `media` option:
-
-```javascript
-plugins: [
-  new HtmlWebpackPlugin(),
-  new PreloadWebpackPlugin({
-    rel: 'preload',
-    media: '(min-width: 600px)'
-  })
-]
-```
+A demo application implementing the [PRPL pattern](https://developers.google.com/web/fundamentals/performance/prpl-pattern/) with React that uses this plugin can be found in the `demo`
+directory.
 
 ## Support
 
@@ -247,7 +239,7 @@ submitting a pull request through GitHub.
 ## Contributing workflow
 
 [`src/index.js`](src/index.js) and [`src/lib/`](src/lib/) contains the primary source for the plugin.
-[`test/`](test/) contains tests.
+[`test/`](test/) contains tests and [`demo/`](demo/) contains demo code.
 
 Test the plugin:
 
@@ -283,7 +275,7 @@ The project is written in ES2015, and is transpiled to support node 6 and above.
 
 ## License
 
-Copyright 2019 Google, Inc.
+Copyright 2018 Google, Inc.
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor
 license agreements.  See the NOTICE file distributed with this work for

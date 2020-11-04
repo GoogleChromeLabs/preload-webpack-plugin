@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * @license
  * Copyright 2018 Google Inc.
@@ -14,14 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 const assert = require('assert');
 
-function createHTMLElementString({elementName, attributes={}, closingTagRequired=false}) {
+function createHTMLElementString({
+  elementName,
+  attributes = {},
+  closingTagRequired = false
+}) {
   assert(elementName, 'Please provide an element name.');
-  assert(!(/\W/.test(elementName)), 'The element name contains invalid characters.');
-
+  assert(!/\W/.test(elementName), 'The element name contains invalid characters.');
   const attributeStrings = [];
+
   for (const [attributeName, attributeValue] of Object.entries(attributes).sort()) {
     if (attributeValue === '') {
       attributeStrings.push(attributeName);

@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * @license
  * Copyright 2018 Google Inc.
@@ -14,11 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-const testSpec = require('../spec');
-
-const descriptionPrefix = '[webpack 4 / html-webpack-plugin 3]';
-testSpec({webpack, HtmlWebpackPlugin, descriptionPrefix});
+const defaultOptions = {
+  rel: 'preload',
+  include: 'asyncChunks',
+  excludeHtmlNames: [],
+  fileBlacklist: [/\.map/]
+};
+module.exports = defaultOptions;
