@@ -36,16 +36,15 @@ class PreloadPlugin {
       return htmlPluginData;
     }
 
-    const extractedChunks = extractChunks({
+    const extractedChunks = [...extractChunks({
       compilation,
       optionsInclude: options.include,
-    });
+    })];
 
     // Flatten the list of files.
-    const allFiles = extractedChunks.reduce((accumulated, chunk) => {
-      return accumulated.concat(chunk.files);
-    }, []);
-    const uniqueFiles = new Set(allFiles);
+    const uniqueFiles = extractedChunks.reduce((accumulated, chunk) => {
+      return new Set([...accumulated, ...chunk.files]);
+    }, new Set());
     const filteredFiles = [...uniqueFiles].filter(file => {
       return (
         !this.options.fileWhitelist ||

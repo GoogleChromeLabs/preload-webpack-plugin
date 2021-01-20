@@ -22,7 +22,7 @@ function extractChunks({compilation, optionsInclude}) {
     // get wired up using link rel=preload when using this plugin. This behavior can be
     // configured to preload all types of chunks or just prefetch chunks as needed.
     if (optionsInclude === undefined || optionsInclude === 'asyncChunks') {
-      return compilation.chunks.filter(chunk => {
+      return [...compilation.chunks].filter(chunk => {
         if ('canBeInitial' in chunk) {
           return !chunk.canBeInitial();
         } else {
@@ -32,7 +32,7 @@ function extractChunks({compilation, optionsInclude}) {
     }
 
     if (optionsInclude === 'initial') {
-      return compilation.chunks.filter(chunk => {
+      return [...compilation.chunks].filter(chunk => {
         if ('canBeInitial' in chunk) {
           return chunk.canBeInitial();
         } else {
@@ -54,7 +54,7 @@ function extractChunks({compilation, optionsInclude}) {
 
     if (Array.isArray(optionsInclude)) {
       // Keep only user specified chunks.
-      return compilation.chunks.filter((chunk) => chunk.name && optionsInclude.includes(chunk.name));
+      return [...compilation.chunks].filter(chunk => chunk.name && optionsInclude.includes(chunk.name));
     }
   } catch (error) {
     return compilation.chunks;

@@ -24,7 +24,7 @@
   },
   "scripts": {
     "lint": "eslint --format=codeframe .",
-    "test": "jasmine test/unit/* test/webpack*/index.js",
+    "test": "jasmine test/unit/* test/webpack5/index.js",
     "coverage": "nyc npm run test",
     "clean": "rimraf build",
     "build": "npm run clean && babel --out-dir=build src",
@@ -48,7 +48,7 @@
     "rimraf": "^3.0.0"
   },
   "peerDependencies": {
-    "html-webpack-plugin": ">=3.0.0",
-    "webpack": ">=4.0.0"
+    "html-webpack-plugin": "^5.0.0-alpha.6",
+    "webpack": "^5.16.0"
   }
 }
