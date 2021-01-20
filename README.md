@@ -1,10 +1,6 @@
 # preload-webpack-plugin
 
-[![NPM version][npm-img]][npm-url]
-[![NPM downloads][npm-downloads-img]][npm-url]
-[![Dependency Status][daviddm-img]][daviddm-url]
-
-![preloads-plugin-compressor](https://cloud.githubusercontent.com/assets/110953/22451103/7700b812-e720-11e6-89e8-a6d4e3533159.png)
+> **DEPRECATED: A fork of this project, https://github.com/vuejs/preload-webpack-plugin can be used instead.**
 
 A webpack plugin for automatically wiring up asynchronous (and other types) of JavaScript
 chunks using `<link rel='preload'>`. This helps with lazy-loading.
