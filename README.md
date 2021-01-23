@@ -154,6 +154,21 @@ will inject just this:
 <link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
 ```
 
+### Specifying a target element
+
+By default, `<link>`s are appended to the `<head>` of the `<html>` document. To append them to the `<body>`, supply the `target` option as follows:
+
+```js
+plugins: [
+  new HtmlWebpackPlugin(),
+  new PreloadWebpackPlugin({
+    rel: 'preload',
+    target: 'body'
+  })
+]
+```
+This can be useful for fine-tuning loading behavior in some browser environments.
+
 ### Filtering chunks
 
 There may be chunks that you don't want to have preloaded (sourcemaps, for example). Before preloading each chunk, this plugin checks that the file does not match any regex in the `fileBlacklist` option. The default value of this blacklist is `[/\.map/]`, meaning no sourcemaps will be preloaded. You can easily override this:
