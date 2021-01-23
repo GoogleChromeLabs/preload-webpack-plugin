@@ -38,6 +38,7 @@ class PreloadPlugin {
 
     const extractedChunks = extractChunks({
       compilation,
+      rel: options.rel,
       optionsInclude: options.include,
     });
 
